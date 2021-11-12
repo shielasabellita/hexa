@@ -30,9 +30,9 @@ router.register(r'groups', user_view.GroupViewSet)
 urlpatterns = [
     path('', api_view.welcome),
     path('admin/', admin.site.urls),
-    path('api/', include('api.urls')),
+    path('api/method/', include('api.urls')),
     # path('me/', include('user.urls')),
-    path('__debug__/', include(debug_toolbar.urls)),
-    path('api.me/', include(router.urls)),
+    # path('__debug__/', include(debug_toolbar.urls)),
+    path('api/account/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
