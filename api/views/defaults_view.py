@@ -1,3 +1,4 @@
+from os import stat
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -8,14 +9,19 @@ from api.models import Company, AccountingPeriod, StatusAndRCode
 # serializers
 from api.serializers import CompanySerializer, AccountingPeriodSerializer, StatusAndReasonCodeSerializer
 # other plugins
-# import pandas as pd
+import pandas as pd
+
+from api.serializers.defaults_serializer import ChartOfAccountsSerializer
 
 
 class SetupDefaultsView(APIView):
 
     def get(self, request, format=None):
         coa = self.sync_chart_of_accounts()
-        return Response(coa)
+        if coa['status'] == "OK":
+            return Response(coa["data"], status.HTTP_200_OK)
+        else:
+            return Response(coa['errors'], status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, format=None):
         data = request.data
@@ -26,14 +32,16 @@ class SetupDefaultsView(APIView):
 
             company_serializer = CompanySerializer(data=data['company'])
             acctng_period_serializer = AccountingPeriodSerializer(data=data['accounting_period'])
-
+            
             if acctng_period_serializer.is_valid() and company_serializer.is_valid():
                 acctng_period_serializer.save()
                 company_serializer.save()
+                self.sync_chart_of_accounts(company_code=data['company']['company_code'])
 
                 setup_data = {}
                 setup_data.update({"company": company_serializer.data})
                 setup_data.update({"accounting_period": acctng_period_serializer.data})
+
                 return Response(setup_data, status=status.HTTP_201_CREATED)
             else:
                 errors = {}
@@ -50,6 +58,25 @@ class SetupDefaultsView(APIView):
         except:
             return False
 
-    # def sync_chart_of_accounts(self, company_code=None):
-    #     df = pd.read_csv('sample.csv').to_dict('records')
+    def sync_chart_of_accounts(self, company_code):
+        print(company_code)
+        coas = pd.read_csv('static/files/coa.csv').to_dict('records')
         
+        updated_coas = []
+        for coa in coas:
+            coa.update({
+                "id": "{} - {}".format(coa['account_code'], coa['account_name']),
+                "company_id": company_code
+            })
+            updated_coas.append(coa)
+
+        print('updated coa',updated_coas)
+        for updated_coa in updated_coas:
+            coa_serializer = ChartOfAccountsSerializer(data=updated_coa)
+            if coa_serializer.is_valid():
+                coa_serializer.save()
+                print('serialized data',coa_serializer.data)
+            else:
+                return Response(coa_serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return True

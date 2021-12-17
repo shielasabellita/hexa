@@ -54,7 +54,7 @@ class Branch(models.Model):
     
 
 class ChartOfAccounts(models.Model):
-    id = models.BigAutoField(primary_key=True)
+    id = models.CharField(primary_key=True, max_length=50)
     account_code = models.CharField(max_length=50)
     account_name = models.CharField(max_length=50)
     account_type_and_financial_group = models.CharField(max_length=80)
