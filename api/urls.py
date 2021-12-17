@@ -1,6 +1,10 @@
-from django.urls import path 
-from . import views
+from django.urls import path
 
+from api.views.defaults_view import SetupDefaultsView 
+# from . import views
+
+
+#/api/method
 urlpatterns = [
-    # path("", views.hello)
+    path('setup', SetupDefaultsView.as_view(), name='setups_default')
 ]
