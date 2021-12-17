@@ -25,7 +25,7 @@ class Company(models.Model):
 
 
 class AccountingPeriod(models.Model):
-    id = models.BigAutoField(primary_key=True)
+    id = models.CharField(primary_key=True, max_length=50)
     acctng_period_code = models.CharField(max_length=45)
     acctng_period_name = models.CharField(max_length=45)
     acctng_period_start_date = models.DateField()

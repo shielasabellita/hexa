@@ -16,15 +16,26 @@ from api.serializers.defaults_serializer import ChartOfAccountsSerializer
 
 class SetupDefaultsView(APIView):
 
-    def get(self, request, format=None):
-        coa = self.sync_chart_of_accounts()
-        if coa['status'] == "OK":
-            return Response(coa["data"], status.HTTP_200_OK)
+    def get(self, request, company_code=None, format=None):
+        # print(request.GET)
+        settings = self.get_default_settings(company_code)
+        print(settings)
+        settings_data = []
+        settings_data.append(CompanySerializer(settings[0]).data)
+        # settings_data.append(AccountingPeriodSerializer(settings[1]).data)
+        # settings_data.append(ChartOfAccountsSerializer(settings[2]).data)
+        
+        if settings_data:
+            return Response(settings_data, status.HTTP_200_OK)
         else:
-            return Response(coa['errors'], status.HTTP_400_BAD_REQUEST)
+            return Response("Not Found", status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, format=None):
         data = request.data
+
+        data['accounting_period'].update({
+            "id": "{} - {}".format(data['accounting_period']['acctng_period_code'], data['company']['company_code'])
+        })
 
         validated = self.validate_company(data['company']['company_code'])
         
@@ -65,18 +76,23 @@ class SetupDefaultsView(APIView):
         updated_coas = []
         for coa in coas:
             coa.update({
-                "id": "{} - {}".format(coa['account_code'], coa['account_name']),
+                "id": "{} - {} - {}".format(coa['account_code'], coa['account_name'], company_code),
                 "company_id": company_code
             })
             updated_coas.append(coa)
 
-        print('updated coa',updated_coas)
         for updated_coa in updated_coas:
             coa_serializer = ChartOfAccountsSerializer(data=updated_coa)
             if coa_serializer.is_valid():
-                coa_serializer.save()
                 print('serialized data',coa_serializer.data)
             else:
                 return Response(coa_serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return True
+
+    def get_default_settings(self, company_code):
+        company = Company.objects.get(company_code=company_code)
+        accounting_period = AccountingPeriod.objects.all()
+        coa = AccountingPeriod.objects.all()
+
+        return [company, accounting_period, coa]
