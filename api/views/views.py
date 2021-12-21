@@ -10,11 +10,24 @@ from rest_framework.views import APIView
 
 class TestView(APIView):
     def get(self, request, format=None):
+        import pandas as pd
+        coa = pd.read_csv('static/files/coa.csv').to_dict('records')
+
         return Response("test rest api get", status.HTTP_200_OK)
 
     def post(self, request, format=None):
         return Response(request.data, status.HTTP_200_OK)
 
+
+class TestViewCSV(APIView):
+    def get(self, request, format=None):
+        import pandas as pd
+        coa = pd.read_csv('static/files/coa.csv').to_dict('records')
+
+        return Response(coa, status.HTTP_200_OK)
+
+    def post(self, request, format=None):
+        return Response(request.data, status.HTTP_200_OK)
 
 
 
