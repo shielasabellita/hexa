@@ -1,6 +1,7 @@
 import random
 from pathlib import Path
 import os
+from django.conf import settings
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -13,7 +14,10 @@ def randomizer():
 
 
 def get_static_path():
-    return os.path.join(BASE_DIR, 'static')
+    if settings.DEBUG == True:
+        return settings.STATICFILES_DIRS
+    else:
+        return settings.STATIC_ROOT
 
 def get_coa_csv_path():
-    return get_static_path()+"/files/coa.csv"
+    return get_static_path()[0]+"/files/coa.csv"
