@@ -22,7 +22,7 @@ class TestView(APIView):
 class TestViewCSV(APIView):
     def get(self, request, format=None):
         import pandas as pd
-        coa = pd.read_csv(get_coa_csv_path).to_dict('records')
+        coa = pd.read_csv(get_coa_csv_path()).to_dict('records')
 
         return Response(coa, status.HTTP_200_OK)
 
