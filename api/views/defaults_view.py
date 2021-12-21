@@ -6,12 +6,16 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 # models
 from api.models import Company, AccountingPeriod, StatusAndRCode
+
 # serializers
 from api.serializers import CompanySerializer, AccountingPeriodSerializer, StatusAndReasonCodeSerializer
+from api.serializers.defaults_serializer import ChartOfAccountsSerializer
+
 # other plugins
 import pandas as pd
 
-from api.serializers.defaults_serializer import ChartOfAccountsSerializer
+# helpers
+from api.utils.helpers import get_static_path, get_coa_csv_path
 
 
 class SetupDefaultsView(APIView):
@@ -70,8 +74,7 @@ class SetupDefaultsView(APIView):
             return False
 
     def sync_chart_of_accounts(self, company_code):
-        print(company_code)
-        coas = pd.read_csv('static/files/coa.csv').to_dict('records')
+        coas = pd.read_csv(get_coa_csv_path()).to_dict('records')
         
         updated_coas = []
         for coa in coas:
