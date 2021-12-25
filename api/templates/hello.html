@@ -12,28 +12,30 @@
     <title>HEXA</title>
     <style>
         body, html { 
-            background: url('{% static 'img/hexa-bg.jpg' %}') no-repeat center center fixed;
+            background: url('{% static 'img/hexa_bg.jpg' %}') no-repeat center center fixed;
             background-size: cover;
-            /* background-image: linear-gradient(rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.2)), url("{% static 'img/hexa-bg.jpg' %}"); */
+            /* background-image: linear-gradient(rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.2)), url("{% static 'img/hexa_bg.jpg' %}"); */
         }
-/* 
+
         .coming-soon {
             display: flex;
             color: white;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-        } */
+            height: 75vh;
+        }
+
+        nav .bg-light {
+          background-color: transparent !important;
+        }
 
     </style>
 </head>
 <body>
-    <!-- <div class="coming-soon">
-        <h1>COMING SOON</h1>
-    </div> -->
+    
 
     <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-dark shadow-5-strong">
     <!-- Container wrapper -->
     <div class="container-fluid">
       <!-- Toggle button -->
@@ -84,6 +86,10 @@
     <!-- Container wrapper -->
   </nav>
   <!-- Navbar -->
+
+  <div class="coming-soon">
+    <h1>COMING SOON</h1>
+</div>
     
 
 
