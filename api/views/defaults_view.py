@@ -53,3 +53,5 @@ class SetupDefaultsView(APIView):
             })
 
             ChartOfAccounts.objects.create(**coa, company=company)
+
+    
