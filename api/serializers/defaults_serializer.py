@@ -14,11 +14,11 @@ class CompanySerializer(serializers.ModelSerializer):
 
 
 class AccountingPeriodSerializer(serializers.ModelSerializer):
-    company_id = serializers.RelatedField(source='company.company_code', read_only=True)
+    company = CompanySerializer(read_only=True)
     class Meta:
         model = AccountingPeriod
         fields = ['id', 'acctng_period_code', 'acctng_period_name', 'acctng_period_start_date',
-                'acctng_period_end_date', 'status', 'company_id',
+                'acctng_period_end_date', 'status', 'company',
                 'created_at', 'updated_at', 'deleted_at']
 
 
@@ -31,8 +31,8 @@ class StatusAndReasonCodeSerializer(serializers.ModelSerializer):
 
 
 class ChartOfAccountsSerializer(serializers.ModelSerializer):
-    company_id = serializers.RelatedField(source='company.company_code', read_only=True)
+    company = CompanySerializer(read_only=True)
     class Meta:
         model = ChartOfAccounts
         fields = ['id', 'account_code', 'account_name', 'account_type_and_financial_group', 'normal_balance',
-                'company_id','report', 'is_default_expense', 'created_at', 'updated_at', 'deleted_at']
+                'company','report', 'is_default_expense', 'created_at', 'updated_at', 'deleted_at']
