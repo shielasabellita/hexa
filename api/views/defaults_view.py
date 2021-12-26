@@ -29,6 +29,9 @@ class SetupDefaultsView(APIView):
             company.save()
 
         try:
+            data['accounting_period'].update({
+                "id": "{} - {}".format(data['accounting_period']['acctng_period_code'], company.company_code)
+            })
             AccountingPeriod.objects.create(**data['accounting_period'], company=company)
             self.sync_coa(company)
 
