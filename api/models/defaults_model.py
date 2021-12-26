@@ -12,6 +12,7 @@ class StatusAndRCode(models.Model):
     trans_label_shortname = models.CharField(max_length=120)
     trans_trigger = models.CharField(max_length=100)
     remarks = models.CharField(max_length=120)
-    created_at = models.DateField(auto_now_add=True)
-    updated_at = models.DateField(auto_now=True, blank=True)
-    deleted_at = models.DateField(auto_now=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True)
+    deleted_at = models.DateTimeField(auto_now=True, blank=True)
