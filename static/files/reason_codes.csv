@@ -1,0 +1,89 @@
+module_group,module,sub_module,trans_type,trans_label,trans_label_shortname,trans_trigger,remarks
+Buy and Pay,Ordering,Purchase Order,Transaction Status,To Receive,,PO Save button,Permanent
+Buy and Pay,Ordering,Purchase Order,Transaction Status,Partially Received,,IR Save buton,Permanent
+Buy and Pay,Ordering,Purchase Order,Transaction Status,Completely Received,,IR Save buton,Permanent
+Buy and Pay,Ordering,Purchase Order,Transaction Status,Cancelled,,PO Cancel button,Permanent
+Buy and Pay,Ordering,Purchase Order,Transaction Reason Code,Order In Transit,PO_InTransit,,Default. Editable
+Buy and Pay,Ordering,Purchase Order,Transaction Reason Code,Order Arrived - In Process,PO_InProcess,,Default. Editable
+Buy and Pay,Ordering,Purchase Order,Transaction Reason Code,Order Arrived - On Hold,PO_OnHold,,Default. Editable
+Buy and Pay,Ordering,Purchase Order,Transaction Reason Code,Late Arrival - Trucking Issue,PO_LateTrucking,,Default. Editable
+Buy and Pay,Ordering,Purchase Order,Transaction Reason Code,Late Arrival - Force Majeur,PO_LateForce,,Default. Editable
+Buy and Pay,Ordering,Purchase Order,Transaction Reason Code,Late Arrival - Other,PO_LateOther,,Default. Editable
+Buy and Pay,Receiving,Item Receipt,Transaction Status,To Bill,,IR Save buton,Permanent
+Buy and Pay,Receiving,Item Receipt,Transaction Status,Billed,,BL Save button,Permanent
+Buy and Pay,Receiving,Item Receipt,Transaction Reason Code,Overserved,IR_Over,,Default. Editable. Item and Transaction-level
+Buy and Pay,Receiving,Item Receipt,Transaction Reason Code,Underserved,IR_Under,,Default. Editable. Item and Transaction-level
+Buy and Pay,Receiving,Item Receipt,Transaction Reason Code,Over/Underserved,IR_OverUnder,,Default. Editable. Transaction-level only
+Buy and Pay,Billing and Return,Bill,Transaction Status,To Pay,,BL Save button,Permanent
+Buy and Pay,Billing and Return,Bill,Transaction Status,Paid,,PE Save button,Permanent
+Buy and Pay,Billing and Return,Bill,Transaction Reason Code,Overdue Account,BL_Overdue,,Default. Editable
+Buy and Pay,Billing and Return,Bill,Transaction Reason Code,Deduction Issue - Charge,BL_DeductionCharge,,Default. Editable
+Buy and Pay,Billing and Return,Bill,Transaction Reason Code,Deduction Issue - Return,BL_DeductionReturn,,Default. Editable
+Buy and Pay,Billing and Return,Bill,Transaction Reason Code,Over(Short) Payment,BL_OverShort,,Default. Editable
+Buy and Pay,Billing and Return,Bill,Transaction Reason Code,Non-Moving Account,BL_Non-Moving,,Default. Editable
+Buy and Pay,Billing and Return,Debit Memo,Transaction Status,To Apply,,DM Save button,Permanent
+Buy and Pay,Billing and Return,Debit Memo,Transaction Status,Applied,,PE Save button,Permanent
+Buy and Pay,Billing and Return,Debit Memo,Transaction Reason Code,Bad Order and Damaged Inventory,DM_Damage,,Default. Editable
+Buy and Pay,Billing and Return,Debit Memo,Transaction Reason Code,Inventory Return,DM_Return,,Default. Editable
+Buy and Pay,Billing and Return,Debit Memo,Transaction Reason Code,Other Adjustment,DM_Other,,Default. Editable
+Buy and Pay,Payment,Payment Entry,Transaction Status,To Reconcile,,PE Save button,Permanent
+Buy and Pay,Payment,Payment Entry,Transaction Status,Reconciled,,Reconcile Bank button,Permanent
+Sell and Collect,Ordering,Sales Order,Transaction Status,To Fulfill,,SO Save button,Permanent
+Sell and Collect,Ordering,Sales Order,Transaction Status,Partially Fulfilled,,IF Save button,Permanent
+Sell and Collect,Ordering,Sales Order,Transaction Status,Completely Fulfilled,,IF Save button,Permanent
+Sell and Collect,Ordering,Sales Order,Transaction Status,Cancelled,,SO Cancel button,Permanent
+Sell and Collect,Ordering,Sales Order,Transaction Reason Code,Fulfillment In Process,SO_InProcess,,Default. Editable
+Sell and Collect,Ordering,Sales Order,Transaction Reason Code,Late Fulfillment - Warehousing Issue,SO_LateWarehousing,,Default. Editable
+Sell and Collect,Ordering,Sales Order,Transaction Reason Code,Late Fulfillment - Other,SO_LateOther,,Default. Editable
+Sell and Collect,Fulfillment,Item Fulfillment,Transaction Status,To Invoice,,IF Save button,Permanent
+Sell and Collect,Fulfillment,Item Fulfillment,Transaction Status,Invoiced,,IV Save button,Permanent
+Sell and Collect,Fulfillment,Item Fulfillment,Transaction Reason Code,Overserved,IF_Over,,Default. Editable. Item and Transaction-level
+Sell and Collect,Fulfillment,Item Fulfillment,Transaction Reason Code,Underserved,IF_Under,,Default. Editable. Item and Transaction-level
+Sell and Collect,Fulfillment,Item Fulfillment,Transaction Reason Code,Over/Underserved,IF_OverUnder,,Default. Editable. Transaction-level only
+Sell and Collect,Invoicing,Sales Invoice,Transaction Status,To Deliver,,SI Save button,Permanent
+Sell and Collect,Invoicing,Sales Invoice,Transaction Status,To Collect,,IF Delivery Date update button,Permanent
+Sell and Collect,Invoicing,Sales Invoice,Transaction Status,Collected,,CE Save button,Permanent
+Sell and Collect,Invoicing,Sales Invoice (POS),Transaction Status,To Deposit,,SI (POS) Save button,Permanent
+Sell and Collect,Invoicing,Sales Invoice (Materials Issuance),Transaction Status,To Charge,,SI (Materials Issuance) Save button,Permanent
+Sell and Collect,Invoicing,Sales Invoice (Materials Issuance),Transaction Status,Charged,,SI (Progress Billing) Save button,Permanent
+Sell and Collect,Invoicing,Sales Invoice (Progress Billing),Transaction Status,To Collect,,SI (Progress Billing) Save button,Permanent
+Sell and Collect,Invoicing,Sales Invoice (Progress Billing),Transaction Status,Collected,,CE Save button,Permanent
+Sell and Collect,Invoicing,Sales Invoice,Transaction Reason Code,Overdue Account,SI_Overdue,,Default. Editable
+Sell and Collect,Invoicing,Sales Invoice,Transaction Reason Code,Post Dated Check,SI_PDC,,Default. Editable
+Sell and Collect,Invoicing,Sales Invoice,Transaction Reason Code,Returned/Bounced Check,SI_R/BC,,Default. Editable
+Sell and Collect,Invoicing,Sales Invoice,Transaction Reason Code,Deductions Issue - Charge,SI_DeductionCharge,,Default. Editable
+Sell and Collect,Invoicing,Sales Invoice,Transaction Reason Code,Deduction Issue - Return,SI_DeductionReturn,,Default. Editable
+Sell and Collect,Invoicing,Sales Invoice,Transaction Reason Code,Over(Short) Payment,SI_OverShort,,Default. Editable
+Sell and Collect,Invoicing,Sales Invoice,Transaction Reason Code,Non-Moving Account,SI_Non-Moving,,Default. Editable
+Sell and Collect,Invoicing and Reversal,Credit Memo,Transaction Status,To Apply,,CM Save button,Permanent
+Sell and Collect,Invoicing and Reversal,Credit Memo,Transaction Status,Applied,,CE Save button,Permanent
+Sell and Collect,Invoicing and Reversal,Credit Memo,Transaction Reason Code,Bad Order and Damaged Inventory,CM_Damage,,Default. Editable
+Sell and Collect,Invoicing and Reversal,Credit Memo,Transaction Reason Code,Inventory Return,CM_Return,,Default. Editable
+Sell and Collect,Invoicing and Reversal,Credit Memo,Transaction Reason Code,Other Adjustment,CM_Other,,Default. Editable
+Sell and Collect,Collection,Collection Entry,Transaction Status,To Deposit,,CE Save button,Permanent
+Sell and Collect,Collection,Collection Entry (and POS),Transaction Status,Deposited,,Deposit Cash button,Permanent
+Sell and Collect,Collection,Collection Entry (and POS),Transaction Status,Reconciled,,Reconcile Bank button,Permanent
+Inventory,Inventory Movement,Transfer,Transaction Status,Completed,,Inventory Movement Save button,Permanent
+Inventory,Inventory Movement,Adjustment,Transaction Status,Completed,,Inventory Movement Save button,Permanent
+Inventory,Inventory Movement,Bill Of Material,Transaction Status,Open,,BOM Save button,Permanent
+Inventory,Inventory Movement,Manufacture,Transaction Status,Completed,,Inventory Movement Save button,Permanent
+Inventory,Inventory Movement,Repack Template,Transaction Status,Open,,Repack Save button,Permanent
+Inventory,Inventory Movement,Repack,Transaction Status,Completed,,Inventory Movement Save button,Permanent
+Inventory,Promotion,Price Rule,Transaction Status,Open,,Price Rule Save button,Permanent
+Inventory,Promotion,Price Rule,Transaction Status,Closed,,Auto-deactivation (Is Active),Permanent
+Inventory,Promotion,Product Rule,Transaction Status,Open,,Product Rule Save button,Permanent
+Inventory,Promotion,Product Rule,Transaction Status,Closed,,Auto-deactivation (Is Active),Permanent
+Accounting,Fund Reconciliation,Fund Reconciliation,Transaction Status,To Reconcile/Reconciled,,Reconcile Fund button,Permanent. Reconciled if Cash Count = Net Fund
+Accounting,Fund Reconciliation,Cash Advance,Transaction Status,To Liquidate,,Cash Advance Save button,Permanent
+Accounting,Fund Reconciliation,Cash Advance,Transaction Status,Partially Liquidated,,Expense Claim Save button,Permanent
+Accounting,Fund Reconciliation,Cash Advance,Transaction Status,Liquidated,,Expense Claim Save button,Permanent
+Accounting,Fund Reconciliation,Expense Claim,Transaction Status,To Replenish,,Expense Claim Save button,Permanent
+Accounting,Fund Reconciliation,Expense Claim,Transaction Status,Replenished,,Get Replenishment button,Permanent
+Accounting,Fund Reconciliation,Fund Reconciliation,Transaction Status,To Reconcile/Reconciled,,Reconcile Fund button,Permanent. Reconciled if Cash Count = Net Fund
+Accounting,Fixed Asset Reconciliation,Asset Creation and Depreciation,Transaction Status,Completed,,Asset Creation/Depreciation Save button,Permanent
+Accounting,Fixed Asset Reconciliation,Asset Disposal or Derecognition,Transaction Status,Completed,,Asset Movement Save button,Permanent
+Accounting,Fixed Asset Reconciliation,Asset Reclass,Transaction Status,Completed,,Asset Movement Save button,Permanent
+Accounting,Fixed Asset Reconciliation,Asset Movement,Transaction Status,Completed,,Asset Movement Save button,Permanent
+Accounting,Create Payroll,Payroll Summary,Transaction Status,To Pay,,Create Payroll Save button,Permanent
+Accounting,Create Payroll,Payroll Summary,Transaction Status,Paid,,PE Save button,Permanent
+Accounting,Create Adjustment,Journal Entry,Transaction Status,Completed,,JE Save button,Permanent

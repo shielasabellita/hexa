@@ -13,7 +13,6 @@ import pandas as pd
 
 class TestView(APIView):
     def get(self, request, format=None):
-        print(get_coa_csv_path())
         return Response("test rest api get", status.HTTP_200_OK)
 
     def post(self, request, format=None):

@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from api import serializers
 # models
-from api.models import Company, AccountingPeriod, ChartOfAccounts
+from api.models.settings_model import ChartOfAccounts
 
 # serializers
 from api.serializers import ChartOfAccountsSerializer, ChartOfAccountsSerializer

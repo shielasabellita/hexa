@@ -21,3 +21,6 @@ def get_static_path():
 
 def get_coa_csv_path():
     return get_static_path()[0]+"/files/coa.csv"
+
+def get_rcs_csv_path():
+    return get_static_path()[0]+"/files/reason_codes.csv"

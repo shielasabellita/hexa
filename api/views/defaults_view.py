@@ -17,7 +17,7 @@ from api.serializers.defaults_serializer import ChartOfAccountsSerializer
 import pandas as pd
 
 # helpers
-from api.utils.helpers import get_static_path, get_coa_csv_path
+from api.utils.helpers import get_static_path, get_coa_csv_path, get_rcs_csv_path
 
 class SetupDefaultsView(APIView):
     def post(self, request, format=None):
@@ -34,6 +34,7 @@ class SetupDefaultsView(APIView):
             })
             AccountingPeriod.objects.create(**data['accounting_period'], company=company)
             self.sync_coa(company)
+            self.sync_reason_codes()
 
             return Response(data, status=status.HTTP_200_OK)
         except Exception as e:
@@ -57,4 +58,7 @@ class SetupDefaultsView(APIView):
 
             ChartOfAccounts.objects.create(**coa, company=company)
 
-    
+    def sync_reason_codes(self):
+        rcs = pd.read_csv(get_rcs_csv_path()).to_dict('records')
+        for rc in rcs:
+            StatusAndRCode.objects.create(**rc)
