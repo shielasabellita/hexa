@@ -40,6 +40,28 @@ class SetupDefaultsView(APIView):
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    def get(self, request, company_code):
+        try:
+            data = {"accounting_period": []}
+            
+            company = self.get_company(company_code)
+            if company:
+                company_serializer = CompanySerializer(company)
+                data.update({
+                    'company': company_serializer.data
+                })
+
+                acctng_prd = AccountingPeriod.objects.filter(company = company_code)
+                for acc in acctng_prd:
+                    data['accounting_period'].append(
+                        AccountingPeriodSerializer(acc).data
+                    )
+            
+            return Response(data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
     def get_company(self, company_code):
         try:
             company = Company.objects.get(company_code = company_code)
