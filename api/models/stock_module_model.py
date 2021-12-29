@@ -113,11 +113,3 @@ class ItemCatSize(models.Model):
     updated_at = models.DateTimeField(auto_now=True, blank=True)
     deleted_at = models.DateTimeField(auto_now=True, blank=True)
 
-
-class ItemCatBrand(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    item_brand = models.CharField(max_length=120)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True, blank=True)
-    deleted_at = models.DateTimeField(auto_now=True, blank=True)
