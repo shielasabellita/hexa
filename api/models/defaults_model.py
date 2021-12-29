@@ -2,6 +2,8 @@ from typing import Tuple
 from django.db import models
 
 
+
+
 class StatusAndRCode(models.Model):
     id = models.BigAutoField(primary_key=True)
     module_group = models.CharField(max_length=120)

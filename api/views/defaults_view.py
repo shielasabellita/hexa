@@ -59,6 +59,6 @@ class SetupDefaultsView(APIView):
             ChartOfAccounts.objects.create(**coa, company=company)
 
     def sync_reason_codes(self):
-        rcs = pd.read_csv(get_rcs_csv_path()).to_dict('records')
+        rcs = pd.read_csv(get_rcs_csv_path(), keep_default_na=False).to_dict('records')
         for rc in rcs:
             StatusAndRCode.objects.create(**rc)
