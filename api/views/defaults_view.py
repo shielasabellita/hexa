@@ -6,12 +6,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 # models
-from api.models import Company, AccountingPeriod, StatusAndRCode
-from api.models.settings_model import ChartOfAccounts
+from api.models import Company, AccountingPeriod, StatusAndRCode, ChartOfAccounts
 
 # serializers
-from api.serializers import CompanySerializer, AccountingPeriodSerializer, StatusAndReasonCodeSerializer
-from api.serializers.defaults_serializer import ChartOfAccountsSerializer
+from api.serializers import CompanySerializer, AccountingPeriodSerializer
 
 # other plugins
 import pandas as pd
