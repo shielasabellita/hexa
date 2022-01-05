@@ -2,6 +2,10 @@ from typing import Tuple
 from django.db import models
 
 
+GLOBAL_YES_NO = (
+        ('Yes', 'Yes'),
+        ('No', 'No'),
+    )
 
 
 class StatusAndRCode(models.Model):
@@ -15,6 +19,9 @@ class StatusAndRCode(models.Model):
     trans_trigger = models.CharField(max_length=100)
     remarks = models.CharField(max_length=120)
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True, blank=True)
-    deleted_at = models.DateTimeField(auto_now=True, blank=True)
+
+class PriceList(models.Model):
+    id = models.CharField(max_length=120, primary_key=True)
+    is_buying = models.CharField(max_length=4, default='No', choices=GLOBAL_YES_NO)
+    is_selling = models.CharField(max_length=4, default='No', choices=GLOBAL_YES_NO)
+    is_both = models.CharField(max_length=4, default='No', choices=GLOBAL_YES_NO)
