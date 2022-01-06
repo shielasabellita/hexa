@@ -1,11 +1,13 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from os import stat
-from rest_framework import status
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework import serializers, status
+from rest_framework import authentication
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from api.serializers.auth_serializer import UserSerializer
 from api.utils.helpers import get_coa_csv_path
 import pandas as pd
 
@@ -32,3 +34,16 @@ class TestViewCSV(APIView):
 
 def welcome(request):
     return render(request, 'hello.html')
+
+
+class TestAuthentication(APIView):
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, format=None):
+        content = {
+            'user': str(request.user),  # `django.contrib.auth.User` instance.
+            'auth': str(request.auth),  # None
+        }
+        
+        return Response(content)

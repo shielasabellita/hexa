@@ -1,7 +1,7 @@
 from os import stat
 from django.db.models.base import Model
 from rest_framework import status
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -18,6 +18,9 @@ import pandas as pd
 from api.utils.helpers import get_static_path, get_coa_csv_path, get_rcs_csv_path
 
 class SetupDefaultsView(APIView):
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = [IsAuthenticated]
+    
     def post(self, request, format=None):
         data = request.data
         

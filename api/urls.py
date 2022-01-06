@@ -4,8 +4,9 @@ from api.views.defaults_view import SetupDefaultsView
 from api.views.company_view import CompanyView
 from api.views.accounting_period_view import AccountingPeriodView
 from api.views.chartofaccounts_view import ChartOfAccountsView
-from api.views.views import TestView, TestViewCSV
+from api.views.views import TestAuthentication, TestView, TestViewCSV
 from api.views.stock_module_view import *
+from api.views.auth_view import *
 # from . import views
 
 
@@ -14,6 +15,10 @@ urlpatterns = [
     # test 
     path('test', TestView.as_view(), name='test_view'),
     path('test_csv', TestViewCSV.as_view(), name='test_view_csv'),
+    path('test_auth', TestAuthentication.as_view(), name='test_auth'),
+
+    # system
+    path('login', LoginView.as_view(), name='login'),
     
     #settings
     path('setup', SetupDefaultsView.as_view(), name='setups_default'),

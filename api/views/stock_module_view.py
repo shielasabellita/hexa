@@ -1,7 +1,7 @@
 from os import stat
 from django.db.models.base import Model
 from rest_framework import status
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -13,6 +13,8 @@ from api.serializers.stock_module_serializer import *
 
 
 class ItemCategoryView(APIView):
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = [IsAuthenticated]
     
     def get(self, request):
         try:
@@ -42,6 +44,8 @@ class ItemCategoryView(APIView):
 
 
 class ItemCatBrandView(APIView):
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = [IsAuthenticated]
     
     def get(self, request):
         try:
@@ -71,6 +75,8 @@ class ItemCatBrandView(APIView):
 
 
 class ItemCatDepartmentView(APIView):
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = [IsAuthenticated]
     
     def get(self, request):
         try:
@@ -99,6 +105,8 @@ class ItemCatDepartmentView(APIView):
 
 
 class ItemCatFormView(APIView):
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = [IsAuthenticated]
     
     def get(self, request):
         try:
@@ -127,6 +135,8 @@ class ItemCatFormView(APIView):
 
 
 class ItemCatManufacturerView(APIView):
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = [IsAuthenticated]
     
     def get(self, request):
         try:
@@ -156,6 +166,8 @@ class ItemCatManufacturerView(APIView):
 
 
 class ItemCatSectionView(APIView):
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = [IsAuthenticated]
     
     def get(self, request):
         try:
@@ -184,6 +196,8 @@ class ItemCatSectionView(APIView):
 
 
 class ItemCatSizeView(APIView):
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = [IsAuthenticated]
     
     def get(self, request):
         try:

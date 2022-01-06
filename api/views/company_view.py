@@ -1,7 +1,7 @@
 from os import stat
 from django.db.models.base import Model
 from rest_framework import status
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -16,6 +16,8 @@ from api.serializers.defaults_serializer import ChartOfAccountsSerializer
 
 
 class CompanyView(APIView):
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = [IsAuthenticated]
     serializer_class = CompanySerializer
     model = Company
     

@@ -1,28 +1,30 @@
+import django
 from rest_framework import status
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_202_ACCEPTED, HTTP_500_INTERNAL_SERVER_ERROR
 from rest_framework.views import APIView
-# from rest_framework.decorators import api_view
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 
-# serializers
-from api.serializers import StatusAndReasonCodeSerializer
-
-# models
-from api.models import StatusAndRCode
+from api.serializers.auth_serializer import UserSerializer
+from rest_framework.authtoken.models import Token
 
 
-class StatusAndReasonCodeView(APIView):
+class LoginView(APIView):
+    
+    def post(self, request):
+        data = request.data
+        user = authenticate(username=data['usr'], password=data['pwd'])
+        if user:
+            user_serializer = UserSerializer(user)
+            user_data = user_serializer.data
+            user_data.pop('password')
 
-    def get(self, request, format=None):
-        status_and_reason_codes = StatusAndRCode.objects.all()
-        serializer = StatusAndReasonCodeSerializer(status_and_reason_codes, many=True)
-        return Response(serializer.data)
+            token = Token.objects.create(user=user)
+            user_data.update({"token": token.key})
 
-    def post(self, request, format=None):
-        serializer = StatusAndReasonCodeSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(user_data)
+        else:
+            return Response('Invalid credentials', status.HTTP_401_UNAUTHORIZED)
+
