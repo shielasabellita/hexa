@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from api.models import Company, AccountingPeriod, StatusAndRCode, ChartOfAccounts
 
 # serializers
-from api.serializers import CompanySerializer, AccountingPeriodSerializer
+from api.serializers.accounting import CompanySerializer, AccountingPeriodSerializer
 
 # other plugins
 import pandas as pd

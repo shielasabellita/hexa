@@ -11,8 +11,7 @@ from api.models import Company, AccountingPeriod, StatusAndRCode
 from api.models.settings_model import ChartOfAccounts
 
 # serializers
-from api.serializers import CompanySerializer, AccountingPeriodSerializer, StatusAndReasonCodeSerializer
-from api.serializers.defaults_serializer import ChartOfAccountsSerializer
+from api.serializers.accounting import CompanySerializer
 
 
 class CompanyView(APIView):

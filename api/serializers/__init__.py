@@ -1,3 +1,4 @@
-from .defaults_serializer import *
-from .stock_module_serializer import *
+from .accounting  import *
+from .buying import *
+from .stock import *
 from .auth_serializer import *

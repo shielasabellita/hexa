@@ -1,11 +1,8 @@
 from django.urls import path
 
-from api.views.defaults_view import SetupDefaultsView
-from api.views.company_view import CompanyView
-from api.views.accounting_period_view import AccountingPeriodView
-from api.views.chartofaccounts_view import ChartOfAccountsView
+from api.views.accounting import SetupDefaultsView, CompanyView, AccountingPeriodView, ChartOfAccountsView
 from api.views.views import TestAuthentication, TestView, TestViewCSV
-from api.views.stock_module_view import *
+from api.views.stock import *
 from api.views.auth_view import *
 # from . import views
 
@@ -26,6 +23,8 @@ urlpatterns = [
     path('company/<company_code>', CompanyView.as_view(), name='company_view'),
     path('accounting_period_list/<company_code>', AccountingPeriodView.as_view(), name='accounting_period_view'),
     path('coa_list/<company_code>', ChartOfAccountsView.as_view(), name='coa_view'),
+
+    
     
     # stock module urls
     path('stock/item_category', ItemCategoryView.as_view(), name='item_category_view'),

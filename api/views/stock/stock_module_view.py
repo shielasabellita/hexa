@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 # models
 from api.models import ItemCategory, ItemCatBrand, ItemCatDepartment, ItemCatForm, ItemCatManufacturer, ItemCatSection, ItemCatSize
 # serializers 
-from api.serializers.stock_module_serializer import *
+from api.serializers.stock.stock_module_serializer import *
 
 
 

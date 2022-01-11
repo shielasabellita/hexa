@@ -5,25 +5,24 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from api import serializers
+
+
 # models
-from api.models.settings_model import ChartOfAccounts
+from api.models import AccountingPeriod
 
 # serializers
-from api.serializers import ChartOfAccountsSerializer, ChartOfAccountsSerializer
+from api.serializers.accounting import AccountingPeriodSerializer
 
-
-class ChartOfAccountsView(APIView):
+class AccountingPeriodView(APIView):
     authentication_classes = (TokenAuthentication, )
     permission_classes = [IsAuthenticated]
-    
-    serializer_class = ChartOfAccountsSerializer
-    model = ChartOfAccounts
-    
 
+    serializer_class = AccountingPeriodSerializer
+    model = AccountingPeriod
+    
     def get(self, request, company_code, *args, **kwargs):
         try:
-            company_inst = ChartOfAccounts.objects.filter(company_id=company_code)
+            company_inst = AccountingPeriod.objects.filter(company_id=company_code)
             data = self.serializer_class(company_inst, many=True).data
 
             return Response(data,  status=status.HTTP_200_OK)

@@ -1,0 +1,1 @@
+from .stock_module_view import *
