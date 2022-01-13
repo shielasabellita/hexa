@@ -15,7 +15,6 @@ class UOM(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
-    deleted_at = models.DateTimeField(blank=True)
 
 
 class ItemCatBrand(models.Model):
@@ -24,7 +23,6 @@ class ItemCatBrand(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
-    deleted_at = models.DateTimeField(blank=True)
 
 
 class ItemCategory(models.Model):
@@ -33,7 +31,6 @@ class ItemCategory(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
-    deleted_at = models.DateTimeField(blank=True)
 
 
 class ItemCatDepartment(models.Model):
@@ -42,7 +39,6 @@ class ItemCatDepartment(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
-    deleted_at = models.DateTimeField(blank=True)
 
 
 class ItemCatForm(models.Model):
@@ -51,7 +47,6 @@ class ItemCatForm(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
-    deleted_at = models.DateTimeField(blank=True)
 
 
 class ItemCatManufacturer(models.Model):
@@ -60,7 +55,6 @@ class ItemCatManufacturer(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
-    deleted_at = models.DateTimeField(blank=True)
 
 
 class ItemCatSection(models.Model):
@@ -69,7 +63,6 @@ class ItemCatSection(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
-    deleted_at = models.DateTimeField(blank=True)
 
 
 class ItemCatSize(models.Model):
@@ -78,7 +71,6 @@ class ItemCatSize(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
-    deleted_at = models.DateTimeField(blank=True)
 
 
 # class Item(models.Model):
@@ -110,4 +102,3 @@ class ItemCatSize(models.Model):
 
 #     created_at = models.DateTimeField(auto_now_add=True)
 #     updated_at = models.DateTimeField(auto_now=True, blank=True)
-#     deleted_at = models.DateTimeField(blank=True)

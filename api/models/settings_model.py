@@ -24,7 +24,7 @@ class Company(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
-    deleted_at = models.DateTimeField(blank=True)
+    
 
 
 class AccountingPeriod(models.Model):
@@ -37,7 +37,7 @@ class AccountingPeriod(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
-    deleted_at = models.DateTimeField(blank=True)
+    
     # foreign key
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
 
@@ -52,7 +52,7 @@ class Branch(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
-    deleted_at = models.DateTimeField(blank=True)
+    
     # FK
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
     
@@ -68,7 +68,7 @@ class ChartOfAccounts(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
-    deleted_at = models.DateTimeField(blank=True)
+    
 
     # FK
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
@@ -84,7 +84,7 @@ class CostCenter(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
-    deleted_at = models.DateTimeField(blank=True)
+    
     # FK
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     
@@ -100,7 +100,7 @@ class Location(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
-    deleted_at = models.DateTimeField(blank=True)
+    
     # FK
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     

@@ -1,1 +1,1 @@
-from .accounting_settings_model import *
+from .accounting_group_model import *

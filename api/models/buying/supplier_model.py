@@ -1,7 +1,7 @@
 from functools import cmp_to_key
 from django.db import models
 from api.models.settings_model import CostCenter, ChartOfAccounts
-from api.models.accounting.accounting_settings_model import VatGroup, WithHoldingTaxGroup
+from api.models.accounting.accounting_group_model import VatGroup, WithHoldingTaxGroup
 from api.models.defaults_model import PriceList
 
 
@@ -50,4 +50,3 @@ class Supplier(models.Model):
     # defaults fields
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
-    deleted_at = models.DateTimeField(blank=True)

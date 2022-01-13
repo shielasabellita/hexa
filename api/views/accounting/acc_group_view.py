@@ -8,23 +8,62 @@ from rest_framework.views import APIView
 
 
 # models
-from api.models import AccountingPeriod
+from api.models import VatGroup, DiscountGroup, SupplierGroup, WithHoldingTaxGroup
 
 # serializers
-from api.serializers.accounting import AccountingPeriodSerializer
+from api.serializers.accounting.accounting_group_serializer import *
 
-class AccountingPeriodView(APIView):
-    authentication_classes = (TokenAuthentication, )
-    permission_classes = [IsAuthenticated]
+class AccountingGroup(APIView):
+    # authentication_classes = (TokenAuthentication, )
+    # permission_classes = [IsAuthenticated]
 
-    serializer_class = AccountingPeriodSerializer
-    model = AccountingPeriod
-    
-    def get(self, request, company_code, *args, **kwargs):
+    def get(self, request, group, *args, **kwargs):
         try:
-            company_inst = AccountingPeriod.objects.filter(company_id=company_code)
-            data = self.serializer_class(company_inst, many=True).data
+            models_and_serializers = {
+                "vat_group": [VatGroup, VatGroupSerializer],
+                "discount_group": [DiscountGroup, DiscountGroupSerializer],
+                "supplier_group": [SupplierGroup, SupplierGroupSerializer],
+                "wht_group": [WithHoldingTaxGroup, WithHoldingTaxGroupSerializer],
+            }
+            if request.data:
+                inst = models_and_serializers[group][0].objects.filter(id=request.data['id'])
+                data = models_and_serializers[group][1](inst).data
+            else:
+                inst = models_and_serializers[group][0].objects.all()
+                data = models_and_serializers[group][1](inst, many=True).data
 
             return Response(data,  status=status.HTTP_200_OK)
-        except:
-            return Response("Not Found", status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request, group, *args, **kwargs):
+        try:
+            models_and_serializers = {
+                "vat_group": [VatGroup, VatGroupSerializer],
+                "discount_group": [DiscountGroup, DiscountGroupSerializer],
+                "supplier_group": [SupplierGroup, SupplierGroupSerializer],
+                "wht_group": [WithHoldingTaxGroup, WithHoldingTaxGroupSerializer],
+            }
+            data = request.data
+            data.update({
+                "id": self.generate_id(group,data)
+            })
+            serializer = models_and_serializers[group][1](data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data,  status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+    def generate_id(self, group, data):
+        if group == 'vat_group':
+            return "{} - {}".format(data['vat_group_code'], data['vat_group_name'])
+        elif group == "discount_group": 
+            return data['discount_name']
+        elif group == 'supplier_group':
+            return data['id']
+        elif group == 'wht_group':
+            return "{} - {}".format(data['wht_code'],data['wht_name'])

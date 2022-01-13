@@ -9,7 +9,6 @@ class VatGroup(models.Model):
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
-    deleted_at = models.DateTimeField(blank=True)
 
 
 class WithHoldingTaxGroup(models.Model):
@@ -20,4 +19,3 @@ class WithHoldingTaxGroup(models.Model):
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
-    deleted_at = models.DateTimeField(blank=True)
