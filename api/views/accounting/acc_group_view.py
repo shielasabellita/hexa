@@ -13,18 +13,20 @@ from api.models import VatGroup, DiscountGroup, SupplierGroup, WithHoldingTaxGro
 # serializers
 from api.serializers.accounting.accounting_group_serializer import *
 
+models_and_serializers = {
+    "vat_group": [VatGroup, VatGroupSerializer],
+    "discount_group": [DiscountGroup, DiscountGroupSerializer],
+    "supplier_group": [SupplierGroup, SupplierGroupSerializer],
+    "wht_group": [WithHoldingTaxGroup, WithHoldingTaxGroupSerializer],
+}
+
+
 class AccountingGroup(APIView):
-    # authentication_classes = (TokenAuthentication, )
-    # permission_classes = [IsAuthenticated]
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, group, *args, **kwargs):
         try:
-            models_and_serializers = {
-                "vat_group": [VatGroup, VatGroupSerializer],
-                "discount_group": [DiscountGroup, DiscountGroupSerializer],
-                "supplier_group": [SupplierGroup, SupplierGroupSerializer],
-                "wht_group": [WithHoldingTaxGroup, WithHoldingTaxGroupSerializer],
-            }
             if request.data:
                 inst = models_and_serializers[group][0].objects.filter(id=request.data['id'])
                 data = models_and_serializers[group][1](inst).data
@@ -38,12 +40,6 @@ class AccountingGroup(APIView):
 
     def post(self, request, group, *args, **kwargs):
         try:
-            models_and_serializers = {
-                "vat_group": [VatGroup, VatGroupSerializer],
-                "discount_group": [DiscountGroup, DiscountGroupSerializer],
-                "supplier_group": [SupplierGroup, SupplierGroupSerializer],
-                "wht_group": [WithHoldingTaxGroup, WithHoldingTaxGroupSerializer],
-            }
             data = request.data
             data.update({
                 "id": self.generate_id(group,data)

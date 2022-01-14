@@ -26,15 +26,7 @@ urlpatterns = [
 
     # accounting group
     path('accounting/group/<group>', AccountingGroup.as_view(), name='accounting_group_view'),
-
-    
     
     # stock module urls
-    path('stock/item_category', ItemCategoryView.as_view(), name='item_category_view'),
-    path('stock/item_category/brand', ItemCatBrandView.as_view(), name='item_brand_view'),
-    path('stock/item_category/department', ItemCatDepartmentView.as_view(), name='item_dept_view'),
-    path('stock/item_category/form', ItemCatFormView.as_view(), name='item_form_view'),
-    path('stock/item_category/manufacturer', ItemCatManufacturerView.as_view(), name='item_manufacturer_view'),
-    path('stock/item_category/section', ItemCatSectionView.as_view(), name='item_section_view'),
-    path('stock/item_category/size', ItemCatSizeView.as_view(), name='item_size_view'),
+    path('stock/category_management/<category>', CategoryManagement.as_view(), name='category_management')
 ]
