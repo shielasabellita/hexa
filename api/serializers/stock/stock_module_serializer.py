@@ -1,6 +1,6 @@
 from typing import ChainMap
 from rest_framework import serializers
-from api.models import ItemCategory, ItemCatBrand, ItemCatDepartment, ItemCatForm, ItemCatManufacturer, ItemCatSection, ItemCatSize
+from api.models import ItemCategory, ItemCatBrand, ItemCatDepartment, ItemCatForm, ItemCatManufacturer, ItemCatSection, ItemCatSize, UOM
 
 class ItemCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -41,4 +41,10 @@ class ItemCatSectionSerializer(serializers.ModelSerializer):
 class ItemCatSizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemCatSize
+        fields = '__all__'
+
+
+class UOMSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UOM
         fields = '__all__'

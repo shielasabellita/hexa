@@ -9,8 +9,8 @@ GLOBAL_YES_NO = (
 
 
 class UOM(models.Model):
-    uom = models.CharField(max_length=120, primary_key=True)
-    must_be_a_whole_number = models.CharField(max_length=120, choices=GLOBAL_YES_NO, default="No")
+    id = models.CharField(max_length=120, primary_key=True)
+    uom = models.CharField(max_length=120)
     must_be_a_whole_number = models.CharField(max_length=120, choices=GLOBAL_YES_NO, default="No")
 
     created_at = models.DateTimeField(auto_now_add=True)

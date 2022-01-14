@@ -5,8 +5,10 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.shortcuts import get_object_or_404
 # models
-from api.models import ItemCategory, ItemCatBrand, ItemCatDepartment, ItemCatForm, ItemCatManufacturer, ItemCatSection, ItemCatSize
+from api.models.stock.item_model import ItemCategory, ItemCatBrand, ItemCatDepartment, ItemCatForm, ItemCatManufacturer, ItemCatSection, ItemCatSize, UOM
+
 # serializers 
 from api.serializers.stock.stock_module_serializer import *
 
@@ -18,11 +20,12 @@ models_and_serializers = {
     "manufacturer": [ItemCatManufacturer, ItemCatManufacturerSerializer],
     "section": [ItemCatSection, ItemCatSectionSerializer],
     "size": [ItemCatSize, ItemCatSizeSerializer],
+    "uom": [UOM, UOMSerializer]
 }
 
 class CategoryManagement(APIView):
-    authentication_classes = (TokenAuthentication, )
-    permission_classes = [IsAuthenticated]
+    # authentication_classes = (TokenAuthentication, )
+    # permission_classes = [IsAuthenticated]
     
     def get(self, request, category):
         try:
@@ -41,7 +44,14 @@ class CategoryManagement(APIView):
 
 
     def post(self, request, category):
-        serializer = models_and_serializers[category][1](data=request.data)
+
+        data = request.data
+        if category == "uom":
+            data.update({
+                'id': data['uom']
+            })
+
+        serializer = models_and_serializers[category][1](data=data)
         if serializer.is_valid():
             serializer.save()
 
@@ -49,3 +59,21 @@ class CategoryManagement(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+    def put(self, request, category):
+        id = request.data['id']
+
+        if id:
+            inst = get_object_or_404(models_and_serializers[category][0].objects.all(), id=id)
+            serializer = models_and_serializers[category][1](inst, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors,
+                                status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response("Please enter ID", status=status.HTTP_400_BAD_REQUEST)
+
+
+    

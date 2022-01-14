@@ -5,6 +5,7 @@ from django.conf import settings
 from django.db.models import query
 
 from api.models.domains_model import Domain
+from api.models.system_model import DeletedDocuments
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -44,3 +45,14 @@ def get_user_domain(user, domain, company=None):
     """
 
     domain = Domain.objects.raw(query)
+
+
+def move_to_deleted_document(table_name, id_no, object, deleted_by):
+    data = {
+        "table_name": table_name,
+        "id_no": id_no,
+        "object": object,
+        "deleted_by": deleted_by
+    }
+    DeletedDocuments.objects.create(**data)
+    return True

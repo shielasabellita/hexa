@@ -40,21 +40,6 @@ class AccountingPeriod(models.Model):
     
     # foreign key
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
-
-
-class Branch(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    branch_code = models.CharField(max_length=45)
-    branch_name = models.CharField(max_length=45)
-    branch_shortname = models.CharField(max_length=45)
-    is_group = models.CharField(max_length=4, choices=GLOBAL_YES_NO, default='No')
-    company_group = models.CharField(max_length=45)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True, blank=True)
-    
-    # FK
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
     
 
 class ChartOfAccounts(models.Model):
@@ -88,6 +73,21 @@ class CostCenter(models.Model):
     # FK
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     
+
+
+class Branch(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    branch_code = models.CharField(max_length=45)
+    branch_name = models.CharField(max_length=45)
+    branch_shortname = models.CharField(max_length=45)
+    is_group = models.CharField(max_length=4, choices=GLOBAL_YES_NO, default='No')
+    company_group = models.CharField(max_length=45, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True)
+    
+    # FK
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
 
 
 class Location(models.Model):
