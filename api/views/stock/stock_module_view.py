@@ -6,11 +6,16 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
+from django.forms.models import model_to_dict
+
 # models
 from api.models.stock.item_model import ItemCategory, ItemCatBrand, ItemCatDepartment, ItemCatForm, ItemCatManufacturer, ItemCatSection, ItemCatSize, UOM
 
 # serializers 
 from api.serializers.stock.stock_module_serializer import *
+from api.utils.helpers import move_to_deleted_document
+
+import json
 
 models_and_serializers = {
     "category": [ItemCategory, ItemCategorySerializer],
@@ -34,7 +39,7 @@ class CategoryManagement(APIView):
             serializer = models_and_serializers[category][1](inst, many=True)
 
             if id != None:
-                inst = models_and_serializers[category][0].objects.get(id=id)
+                inst = get_object_or_404(models_and_serializers[category][0], id=id)
                 serializer = models_and_serializers[category][1](inst)
             
             data = serializer.data
@@ -76,4 +81,15 @@ class CategoryManagement(APIView):
             return Response("Please enter ID", status=status.HTTP_400_BAD_REQUEST)
 
 
-    
+    def delete(self, request, category):
+        ids = request.data['ids']
+        
+        for id in ids: 
+            try:
+                inst = get_object_or_404(models_and_serializers[category][0].objects.all(), id=id)
+                move_to_deleted_document(category, id, json.dumps(model_to_dict(inst)), request.user)
+                inst.delete()
+            except Exception as e:
+                return Response("ID {} Not Found".format(id), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        return Response("Successfully deleted", status=status.HTTP_204_NO_CONTENT)

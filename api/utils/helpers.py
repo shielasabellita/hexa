@@ -56,3 +56,4 @@ def move_to_deleted_document(table_name, id_no, object, deleted_by):
     }
     DeletedDocuments.objects.create(**data)
     return True
+
