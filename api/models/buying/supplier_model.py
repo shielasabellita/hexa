@@ -1,6 +1,6 @@
 from functools import cmp_to_key
 from django.db import models
-from api.models.settings_model import CostCenter, ChartOfAccounts
+from api.models.setup_model import CostCenter, ChartOfAccounts
 from api.models.accounting.accounting_group_model import VatGroup, WithHoldingTaxGroup
 from api.models.defaults_model import PriceList
 

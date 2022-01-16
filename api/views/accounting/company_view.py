@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from api import serializers
 # models
 from api.models import Company, AccountingPeriod, StatusAndRCode
-from api.models.settings_model import ChartOfAccounts
+from api.models.setup_model import ChartOfAccounts
 
 # serializers
 from api.serializers.accounting import CompanySerializer

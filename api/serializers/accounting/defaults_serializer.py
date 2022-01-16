@@ -1,7 +1,7 @@
 from typing import ChainMap
 from rest_framework import serializers
 from api.models import Company, AccountingPeriod, StatusAndRCode
-from api.models.settings_model import ChartOfAccounts
+from api.models.setup_model import ChartOfAccounts
 
 
 class CompanySerializer(serializers.ModelSerializer):

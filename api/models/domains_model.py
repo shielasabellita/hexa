@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from api.models.settings_model import Company
+from api.models.setup_model import Company
 
 
 class Domain(models.Model):
