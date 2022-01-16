@@ -29,8 +29,8 @@ models_and_serializers = {
 }
 
 class CategoryManagement(APIView):
-    # authentication_classes = (TokenAuthentication, )
-    # permission_classes = [IsAuthenticated]
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = [IsAuthenticated]
     
     def get(self, request, category):
         try:
@@ -92,4 +92,5 @@ class CategoryManagement(APIView):
             except Exception as e:
                 return Response("ID {} Not Found".format(id), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-        return Response("Successfully deleted", status=status.HTTP_204_NO_CONTENT)
+        return Response("Successfully deleted", status=status.HTTP_200_OK)
+
