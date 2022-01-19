@@ -6,8 +6,8 @@ from api.models.defaults_model import PriceList
 
 
 GLOBAL_YES_NO = (
-        ('Yes', 'Yes'),
-        ('No', 'No'),
+        (1, 1),
+        (0, 0),
     )
 
 class SupplierGroup(models.Model):
@@ -25,7 +25,7 @@ class Supplier(models.Model):
     sup_name = models.CharField(max_length=120)
     sup_shortname = models.CharField(max_length=120, blank=True)
     check_payee_name = models.CharField(max_length=120, blank=True)
-    is_trucker = models.CharField(max_length=4, default='No', choices=GLOBAL_YES_NO)
+    is_trucker = models.IntegerField(choices=GLOBAL_YES_NO, default=0)
     tax_identification_no = models.CharField(max_length=120, blank=True)
     term = models.CharField(max_length=120, blank=True)
     email = models.CharField(max_length=120, blank=True)

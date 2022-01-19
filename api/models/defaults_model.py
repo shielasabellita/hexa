@@ -3,8 +3,8 @@ from django.db import models
 
 
 GLOBAL_YES_NO = (
-        ('Yes', 'Yes'),
-        ('No', 'No'),
+        (1, 1),
+        (0, 0),
     )
 
 
@@ -22,9 +22,9 @@ class StatusAndRCode(models.Model):
 
 class PriceList(models.Model):
     id = models.CharField(max_length=120, primary_key=True)
-    is_buying = models.CharField(max_length=4, default='No', choices=GLOBAL_YES_NO)
-    is_selling = models.CharField(max_length=4, default='No', choices=GLOBAL_YES_NO)
-    is_both = models.CharField(max_length=4, default='No', choices=GLOBAL_YES_NO)
+    is_buying = models.IntegerField(choices=GLOBAL_YES_NO, default=0)
+    is_selling = models.IntegerField(choices=GLOBAL_YES_NO, default=0)
+    is_both = models.IntegerField(choices=GLOBAL_YES_NO, default=0)
 
 
 # class ItemGroup(models.Model):

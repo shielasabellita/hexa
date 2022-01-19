@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 # models
 from api.models import Company, AccountingPeriod, StatusAndRCode, ChartOfAccounts
 from api.models.accounting.accounting_group_model import VatGroup
+from api.models.stock.item_category_model import UOM
 from api.models.stock.item_model import FixedAssetGroup, ItemGroup
 
 # serializers
@@ -44,6 +45,7 @@ class SetupDefaultsView(APIView):
                 self.sync_vatgroup()
                 self.sync_fixed_asset_group()
                 self.sync_itemgroup()
+                self.sync_uom()
 
                 return Response(data, status=status.HTTP_200_OK)
             except Exception as e:
@@ -145,3 +147,17 @@ class SetupDefaultsView(APIView):
         fas = ["Motor Vehicle", "Office Equipment", "Furniture and Fixture"]
         for fa in fas:
             FixedAssetGroup.objects.create(id=fa)
+
+    def sync_uom(self):
+        uoms = [
+            {
+                "id": "Unit",
+                "uom": "Unit"
+            },
+            {
+                "id": "Case",
+                "uom": "Case"
+            },
+        ]
+        for uom in uoms: 
+            UOM.objects.create(**uom)

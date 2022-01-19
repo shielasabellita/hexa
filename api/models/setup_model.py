@@ -4,8 +4,8 @@ from django.db import models
 # Create your models here.
 
 GLOBAL_YES_NO = (
-        ('Yes', 'Yes'),
-        ('No', 'No'),
+        (1, 1),
+        (0, 0),
     )
 
 class Company(models.Model):
@@ -15,7 +15,7 @@ class Company(models.Model):
     company_address = models.CharField(max_length=120, null=True)
     company_contact_no = models.CharField(max_length=120, null=True)
     company_email = models.CharField(max_length=120, null=True)
-    is_group = models.CharField(max_length=4, choices=GLOBAL_YES_NO, default='No')
+    is_group = models.IntegerField(choices=GLOBAL_YES_NO, default=0)
     company_group = models.CharField(max_length=120, null=True)
     currency = models.CharField(max_length=4, default="PHP")
     company_reg_no = models.CharField(max_length=120, null=True)
@@ -49,7 +49,7 @@ class ChartOfAccounts(models.Model):
     account_type_and_financial_group = models.CharField(max_length=80)
     normal_balance = models.CharField(max_length=120)
     report = models.CharField(max_length=120)
-    is_default_expense = models.CharField(max_length=4, choices=GLOBAL_YES_NO, default='No')
+    is_default_expense = models.IntegerField(choices=GLOBAL_YES_NO, default=0)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
@@ -64,7 +64,7 @@ class CostCenter(models.Model):
     cost_center_code = models.CharField(max_length=120)
     cost_center_name = models.CharField(max_length=120)
     cost_center_shortname = models.CharField(max_length=120)
-    is_group = models.CharField(max_length=4, choices=GLOBAL_YES_NO, default='No')
+    is_group = models.IntegerField(choices=GLOBAL_YES_NO, default=0)
     cost_center_group = models.CharField(max_length=120)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -80,7 +80,7 @@ class Branch(models.Model):
     branch_code = models.CharField(max_length=45)
     branch_name = models.CharField(max_length=45)
     branch_shortname = models.CharField(max_length=45)
-    is_group = models.CharField(max_length=4, choices=GLOBAL_YES_NO, default='No')
+    is_group = models.IntegerField(choices=GLOBAL_YES_NO, default=0)
     company_group = models.CharField(max_length=45, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -95,7 +95,7 @@ class Location(models.Model):
     location_code = models.CharField(max_length=120)
     location_name = models.CharField(max_length=120)
     location_shortname = models.CharField(max_length=120)
-    is_group = models.CharField(max_length=4, choices=GLOBAL_YES_NO, default='No')
+    is_group = models.IntegerField(choices=GLOBAL_YES_NO, default=0)
     branch_group = models.CharField(max_length=120, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
