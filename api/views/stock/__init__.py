@@ -1,1 +1,1 @@
-from .stock_module_view import *
+from .item_category_view import *

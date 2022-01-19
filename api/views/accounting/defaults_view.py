@@ -1,3 +1,4 @@
+
 from os import stat
 from django.db.models.base import Model
 from rest_framework import status
@@ -7,6 +8,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 # models
 from api.models import Company, AccountingPeriod, StatusAndRCode, ChartOfAccounts
+from api.models.accounting.accounting_group_model import VatGroup
+from api.models.stock.item_model import FixedAssetGroup, ItemGroup
 
 # serializers
 from api.serializers.accounting import CompanySerializer, AccountingPeriodSerializer
@@ -16,30 +19,39 @@ import pandas as pd
 
 # helpers
 from api.utils.helpers import get_static_path, get_coa_csv_path, get_rcs_csv_path
+from api.views.accounting.company_view import CompanyView
 
 class SetupDefaultsView(APIView):
-    authentication_classes = (TokenAuthentication, )
-    permission_classes = [IsAuthenticated]
+    # authentication_classes = (TokenAuthentication, )
+    # permission_classes = [IsAuthenticated]
     
     def post(self, request, format=None):
-        data = request.data
+        if self.validate_one_company() == True:
+            data = request.data
+            
+            company = self.get_company(data['company']['company_code'])
+            if not company: 
+                company = Company(**data['company'])
+                company.save()
+
+            try:
+                data['accounting_period'].update({
+                    "id": "{} - {}".format(data['accounting_period']['acctng_period_code'], company.company_code)
+                })
+                AccountingPeriod.objects.create(**data['accounting_period'], company=company)
+                self.sync_coa(company)
+                self.sync_reason_codes()
+                self.sync_vatgroup()
+                self.sync_fixed_asset_group()
+                self.sync_itemgroup()
+
+                return Response(data, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-        company = self.get_company(data['company']['company_code'])
-        if not company: 
-            company = Company(**data['company'])
-            company.save()
+        else:
+            return Response("Database already used", status=status.HTTP_403_FORBIDDEN)
 
-        try:
-            data['accounting_period'].update({
-                "id": "{} - {}".format(data['accounting_period']['acctng_period_code'], company.company_code)
-            })
-            AccountingPeriod.objects.create(**data['accounting_period'], company=company)
-            self.sync_coa(company)
-            self.sync_reason_codes()
-
-            return Response(data, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def get(self, request, company_code):
         try:
@@ -62,6 +74,11 @@ class SetupDefaultsView(APIView):
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    def validate_one_company(self):
+        if len(Company.objects.all()) > 0:
+            return False
+        else:
+            return True
 
     def get_company(self, company_code):
         try:
@@ -85,3 +102,46 @@ class SetupDefaultsView(APIView):
         rcs = pd.read_csv(get_rcs_csv_path(), keep_default_na=False).to_dict('records')
         for rc in rcs:
             StatusAndRCode.objects.create(**rc)
+
+
+    def sync_vatgroup(self):
+        vat = [
+                {
+                    "id" :"0% VAT-Exempt",
+                    "vat_group_code": "0% VAT-Exempt",
+                    "vat_group_name": "VAT-Exempt",
+                    "rate": 0
+                }, 
+                {
+                    "id" :"0% Zero Rated",
+                    "vat_group_code": "0% Zero Rated",
+                    "vat_group_name": "Zero Rated",
+                    "rate": 0
+                }, 
+                {
+                    "id" :"12% Input Tax",
+                    "vat_group_code": "12% Input Tax",
+                    "vat_group_name": "Input Tax",
+                    "rate": 12
+                }, 
+                {
+                    "id" :"12% Output Tax",
+                    "vat_group_code": "12% Output Tax",
+                    "vat_group_name": "Output Tax",
+                    "rate": 12
+                }
+            ]
+        for v in vat: 
+            VatGroup.objects.create(**v)
+
+    
+    def sync_itemgroup(self):
+        item_groups = ["Product", "Asset", "Material", "Service", "Other"]
+        for ig in item_groups:
+            ItemGroup.objects.create(id=ig)
+
+    
+    def sync_fixed_asset_group(self):
+        fas = ["Motor Vehicle", "Office Equipment", "Furniture and Fixture"]
+        for fa in fas:
+            FixedAssetGroup.objects.create(id=fa)

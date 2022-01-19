@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 from django.forms.models import model_to_dict
 
 # models
-from api.models.stock.item_model import ItemCategory, ItemCatBrand, ItemCatDepartment, ItemCatForm, ItemCatManufacturer, ItemCatSection, ItemCatSize, UOM
+from api.models.stock.item_category_model import ItemCategory, ItemCatBrand, ItemCatDepartment, ItemCatForm, ItemCatManufacturer, ItemCatSection, ItemCatSize, UOM
 
 # serializers 
 from api.serializers.stock.stock_module_serializer import *

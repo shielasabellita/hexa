@@ -25,3 +25,12 @@ class PriceList(models.Model):
     is_buying = models.CharField(max_length=4, default='No', choices=GLOBAL_YES_NO)
     is_selling = models.CharField(max_length=4, default='No', choices=GLOBAL_YES_NO)
     is_both = models.CharField(max_length=4, default='No', choices=GLOBAL_YES_NO)
+
+
+# class ItemGroup(models.Model):
+#     id = models.CharField(max_length=120, primary_key=True)
+#     item_groupname = models.CharField(max_length=120)
+#     fixed_asset_group = models.CharField(max_length=120)
+#     vat_group = models.CharField(max_length=120)
+#     default_income = models.CharField(max_length=120)
+#     default_cos_account = models.CharField(max_length=120)
