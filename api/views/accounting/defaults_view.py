@@ -11,6 +11,7 @@ from api.models import Company, AccountingPeriod, StatusAndRCode, ChartOfAccount
 from api.models.accounting.accounting_group_model import VatGroup
 from api.models.stock.item_category_model import UOM
 from api.models.stock.item_model import FixedAssetGroup, ItemGroup
+from api.models.system_model import Series
 
 # serializers
 from api.serializers.accounting import CompanySerializer, AccountingPeriodSerializer
@@ -46,6 +47,7 @@ class SetupDefaultsView(APIView):
                 self.sync_fixed_asset_group()
                 self.sync_itemgroup()
                 self.sync_uom()
+                self.sync_series()
 
                 return Response(data, status=status.HTTP_200_OK)
             except Exception as e:
@@ -161,3 +163,40 @@ class SetupDefaultsView(APIView):
         ]
         for uom in uoms: 
             UOM.objects.create(**uom)
+
+
+    def sync_series(self):
+        series = [
+            {
+                "id": "ITM",
+                "no_of_zeroes": 9,
+                "current": 0
+            },
+            {
+                "id": "SUP",
+                "no_of_zeroes": 9,
+                "current": 0
+            },
+            {
+                "id": "CUS",
+                "no_of_zeroes": 9,
+                "current": 0
+            },
+            {
+                "id": "EMP",
+                "no_of_zeroes": 9,
+                "current": 0
+            },
+            {
+                "id": "BRC",
+                "no_of_zeroes": 9,
+                "current": 0
+            },
+            {
+                "id": "DEP",
+                "no_of_zeroes": 9,
+                "current": 0
+            },
+        ]
+        for s in series:
+            Series.objects.create(**s)

@@ -12,7 +12,7 @@ from django.forms.models import model_to_dict
 from api.models.stock.item_category_model import ItemCategory, ItemCatBrand, ItemCatDepartment, ItemCatForm, ItemCatManufacturer, ItemCatSection, ItemCatSize, UOM
 
 # serializers 
-from api.serializers.stock.stock_module_serializer import *
+from api.serializers.stock.category_management_serializer import *
 from api.utils.helpers import move_to_deleted_document
 
 import json

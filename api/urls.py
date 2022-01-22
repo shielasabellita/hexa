@@ -28,5 +28,6 @@ urlpatterns = [
     path('accounting/group/<group>', AccountingGroup.as_view(), name='accounting_group_view'),
     
     # stock module urls
-    path('stock/category_management/<category>', CategoryManagement.as_view(), name='category_management')
+    path('stock/category_management/<category>', CategoryManagement.as_view(), name='category_management'),
+    path('stock/item', ItemView.as_view(), name='item')
 ]
