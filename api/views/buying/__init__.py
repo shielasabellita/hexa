@@ -1,1 +1,1 @@
-from .supplier_model import *
+from .supplier_view import *

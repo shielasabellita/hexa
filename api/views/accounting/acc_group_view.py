@@ -28,8 +28,8 @@ models_and_serializers = {
 
 
 class AccountingGroup(APIView):
-    authentication_classes = (TokenAuthentication, )
-    permission_classes = [IsAuthenticated]
+    # authentication_classes = (TokenAuthentication, )
+    # permission_classes = [IsAuthenticated]
 
 
     def get(self, request, group, *args, **kwargs):
@@ -54,6 +54,13 @@ class AccountingGroup(APIView):
             data.update({
                 "id": self.generate_id(group,data)
             })
+
+            if group == "discount_group":
+                data.update({
+                    "total_discount": sum([data['discount1'], data['discount2'], data['discount3']])
+                })
+
+
             serializer = models_and_serializers[group][1](data=data)
             if serializer.is_valid():
                 serializer.save()

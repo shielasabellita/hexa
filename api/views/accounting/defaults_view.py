@@ -9,6 +9,9 @@ from rest_framework.views import APIView
 # models
 from api.models import Company, AccountingPeriod, StatusAndRCode, ChartOfAccounts
 from api.models.accounting.accounting_group_model import VatGroup
+from api.models.buying.supplier_model import SupplierGroup
+from api.models.defaults_model import PriceList
+from api.models.setup_model import CostCenter
 from api.models.stock.item_category_model import UOM
 from api.models.stock.item_model import FixedAssetGroup, ItemGroup
 from api.models.system_model import Series
@@ -48,8 +51,11 @@ class SetupDefaultsView(APIView):
                 self.sync_itemgroup()
                 self.sync_uom()
                 self.sync_series()
+                self.sync_price_list()
+                self.sync_supplier_group()
+                self.sync_costcenter()
 
-                return Response(data, status=status.HTTP_200_OK)
+                return Response(CompanySerializer(company).data, status=status.HTTP_200_OK)
             except Exception as e:
                 return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
@@ -78,6 +84,7 @@ class SetupDefaultsView(APIView):
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
     def validate_one_company(self):
         if len(Company.objects.all()) > 0:
             return False
@@ -101,6 +108,7 @@ class SetupDefaultsView(APIView):
             })
 
             ChartOfAccounts.objects.create(**coa, company=company)
+
 
     def sync_reason_codes(self):
         rcs = pd.read_csv(get_rcs_csv_path(), keep_default_na=False).to_dict('records')
@@ -200,3 +208,110 @@ class SetupDefaultsView(APIView):
         ]
         for s in series:
             Series.objects.create(**s)
+
+
+    def sync_price_list(self):
+        prices = [
+            {
+                "id": "Buying",
+                "is_buying": 1,
+                "is_selling": 0,
+                "is_transfer": 0,
+            },
+            {
+                "id": "Selling",
+                "is_buying": 0,
+                "is_selling": 1,
+                "is_transfer": 0,
+            },
+            {
+                "id": "Transfer",
+                "is_buying": 0,
+                "is_selling": 0,
+                "is_transfer": 1,
+            },
+        ]
+
+        for p in prices: 
+            PriceList.objects.create(**p)
+
+
+    def sync_supplier_group(self):
+        groups = ["Local", "Service", "Concessionaire", "Intercompany", "Imported"]
+        
+        for g in groups:
+            SupplierGroup.objects.create(id=g)
+
+
+    def sync_costcenter(self):
+        costcenter = [
+            {
+                "cost_center_name": "Administration",
+                "cost_center_shortname": "AD",
+            },
+            {
+                "cost_center_name": "Audit",
+                "cost_center_shortname": "AU",
+            },
+            {
+                "cost_center_name": "Engineering",
+                "cost_center_shortname": "EN",
+            },
+            {
+                "cost_center_name": "Finance & Accountng",
+                "cost_center_shortname": "FA",
+            },
+            {
+                "cost_center_name": "Human Resource",
+                "cost_center_shortname": "HR",
+            },
+            {
+                "cost_center_name": "Information Technology",
+                "cost_center_shortname": "IT",
+            },
+            {
+                "cost_center_name": "Maintenance",
+                "cost_center_shortname": "MA",
+            },
+            {
+                "cost_center_name": "Production",
+                "cost_center_shortname": "PR",
+            },
+            {
+                "cost_center_name": "Sales",
+                "cost_center_shortname": "SA",
+            },
+            {
+                "cost_center_name": "Supply Chain",
+                "cost_center_shortname": "AD",
+            },
+            {
+                "cost_center_name": "Other",
+                "cost_center_shortname": "OT",
+            },
+        ]
+
+        for c in costcenter: 
+            cc = {
+                "id": c['cost_center_name'],
+                "cost_center_code": c['cost_center_name'],
+                "cost_center_name": c['cost_center_name'],
+                "cost_center_shortname": c['cost_center_shortname'],
+            }
+
+            CostCenter.objects.create(**cc)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

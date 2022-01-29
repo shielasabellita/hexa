@@ -4,6 +4,7 @@ from api.views.accounting import *
 from api.views.views import *
 from api.views.stock import *
 from api.views.auth_view import *
+from api.views.buying import *
 # from . import views
 
 
@@ -29,5 +30,9 @@ urlpatterns = [
     
     # stock module urls
     path('stock/category_management/<category>', CategoryManagement.as_view(), name='category_management'),
-    path('stock/item', ItemView.as_view(), name='item')
+    path('stock/item', ItemView.as_view(), name='item'),
+
+    # buying module
+    path('buying/supplier', SupplierView.as_view(), name='supplier')
+    
 ]

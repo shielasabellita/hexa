@@ -1,12 +1,11 @@
-
-from pyexpat import model
 from django.db import models
+from api.models.accounting import *
+from api.models.stock import *
+from api.models.buying import *
+from api.models.setup_model import *
+from api.models.system_model import *
+from api.models.defaults_model import *
 
-from api.models.accounting.accounting_group_model import VatGroup
-from api.models.buying.supplier_model import Supplier
-from api.models.defaults_model import PriceList
-from api.models.setup_model import ChartOfAccounts
-from .item_category_model import UOM
 
 GLOBAL_YES_NO = (
         (1, 1),
@@ -82,30 +81,25 @@ class Item(models.Model):
 class ItemPrice(models.Model):
     id = models.CharField(max_length=120, primary_key=True)
     price = models.FloatField(default=0.00)
-    is_default_selling = models.IntegerField(choices=GLOBAL_YES_NO)
-    is_default_buying = models.IntegerField(choices=GLOBAL_YES_NO)
 
     base_uom = models.ForeignKey(UOM, on_delete=models.CASCADE)
     price_list = models.ForeignKey(PriceList, on_delete=models.CASCADE)
-    item_code = models.ForeignKey(Item, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
 
 
 
 ## ITEM CHILD TABLES
-class UOMConversionFactor(models.Model):
+class UOMConversionDetail(models.Model):
     id = models.BigAutoField(primary_key=True)
     conversion_factor = models.FloatField()
     
     #FK
     uom = models.ForeignKey(UOM, on_delete=models.CASCADE)
-    item_code = models.ForeignKey(Item, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
 
 
-class SupplierItems(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    # FK
-    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
-    item_code = models.ForeignKey(Item, on_delete=models.CASCADE)
+
+
 
 
 

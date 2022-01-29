@@ -21,6 +21,7 @@ class Company(models.Model):
     company_reg_no = models.CharField(max_length=120, null=True)
     company_taxid_no = models.CharField(max_length=120, null=True)
     business_permit_no = models.CharField(max_length=120, null=True)
+    is_construction_company = models.IntegerField(choices=GLOBAL_YES_NO, default=0)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
@@ -60,18 +61,18 @@ class ChartOfAccounts(models.Model):
     
 
 class CostCenter(models.Model):
-    id = models.BigAutoField(primary_key=True)
+    id = models.CharField(max_length=120,primary_key=True)
     cost_center_code = models.CharField(max_length=120)
     cost_center_name = models.CharField(max_length=120)
     cost_center_shortname = models.CharField(max_length=120)
     is_group = models.IntegerField(choices=GLOBAL_YES_NO, default=0)
-    cost_center_group = models.CharField(max_length=120)
+    cost_center_group = models.CharField(max_length=120, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
     
     # FK
-    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    # company = models.ForeignKey(Company, on_delete=models.CASCADE)
     
 
 

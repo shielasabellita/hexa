@@ -24,7 +24,7 @@ class PriceList(models.Model):
     id = models.CharField(max_length=120, primary_key=True)
     is_buying = models.IntegerField(choices=GLOBAL_YES_NO, default=0)
     is_selling = models.IntegerField(choices=GLOBAL_YES_NO, default=0)
-    is_both = models.IntegerField(choices=GLOBAL_YES_NO, default=0)
+    is_transfer = models.IntegerField(choices=GLOBAL_YES_NO, default=0)
 
 
 # class ItemGroup(models.Model):
