@@ -31,10 +31,10 @@ class SupplierView(APIView):
         if id:
             try:
                 supplier = self.model.objects.get(id=id)
-                data = self.serializer_class(supplier)
+                data = self.serializer_class(supplier).data
                 return Response(data, status=status.HTTP_200_OK)
             except Exception as e:
-                return Response("Supplier not found", status=status.HTTP_404_NOT_FOUND)
+                return Response(str(e))
 
         return Response(data, status=status.HTTP_200_OK)
 
