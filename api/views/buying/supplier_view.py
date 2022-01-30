@@ -19,8 +19,8 @@ from api.utils.naming import set_naming_series
 import json
 
 class SupplierView(APIView):
-    # authentication_classes = (TokenAuthentication, )
-    # permission_classes = [IsAuthenticated]
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = [IsAuthenticated]
     
     model = Supplier
     serializer_class = SupplierSerializer

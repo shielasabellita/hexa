@@ -28,8 +28,8 @@ models_and_serializers = {
 
 
 class AccountingGroup(APIView):
-    # authentication_classes = (TokenAuthentication, )
-    # permission_classes = [IsAuthenticated]
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = [IsAuthenticated]
 
 
     def get(self, request, group, *args, **kwargs):

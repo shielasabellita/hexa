@@ -210,6 +210,9 @@ class ItemView(APIView):
 
 
 class ItemDetailsView(APIView):
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = [IsAuthenticated]
+    
     def post(self, request, item_detail):
         request_data = request.data 
 

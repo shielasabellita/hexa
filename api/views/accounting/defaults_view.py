@@ -27,8 +27,8 @@ from api.utils.helpers import get_static_path, get_coa_csv_path, get_rcs_csv_pat
 from api.views.accounting.company_view import CompanyView
 
 class SetupDefaultsView(APIView):
-    # authentication_classes = (TokenAuthentication, )
-    # permission_classes = [IsAuthenticated]
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = [IsAuthenticated]
     
     def post(self, request, format=None):
         if self.validate_one_company() == True:
