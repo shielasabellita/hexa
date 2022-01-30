@@ -1,6 +1,7 @@
 from os import stat
 from pkgutil import get_data
 from django.db.models.base import Model
+from numpy import delete
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -8,17 +9,18 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.forms.models import model_to_dict
+from api import serializers
 from api.models.accounting.accounting_group_model import VatGroup
 from api.models.defaults_model import PriceList
 from api.models.setup_model import ChartOfAccounts
 
 # models
-from api.models.stock import Item
-from api.models.stock import FixedAssetGroup, ItemGroup, ItemPrice, UOMConversionDetail, UOM
+from api.models.stock import Item, FixedAssetGroup, ItemGroup, ItemPrice, UOMConversionDetail, UOM
 from api.models.buying import Supplier, SupplierItems
 
 # serializers 
 from api.serializers.stock import ItemSerializer
+from api.serializers.stock.category_management_serializer import ItemPriceSerializer, SupplierItemsSerializer
 from api.utils.helpers import move_to_deleted_document, get_company, get_doc
 from api.utils.naming import set_naming_series
 
@@ -62,15 +64,17 @@ class ItemView(APIView):
 
 
     def put(self, request, *args, **kwargs):
-        id = request.data['id']
+        id = request.data['item_code']
+
+        request.data.update({"id": id})
 
         if id:
             inst = get_object_or_404(self.model.objects.all(), id=id)
             serializer = self.serializer_class(inst, data=request.data)
             if serializer.is_valid():
                 serializer.save()
-
-                return Response(serializer.data, status=status.HTTP_200_OK)
+                data = self.get_data(inst)
+                return Response(data, status=status.HTTP_200_OK)
             else:
                 return Response(serializer.errors,
                                 status=status.HTTP_400_BAD_REQUEST)
@@ -104,6 +108,7 @@ class ItemView(APIView):
 
         for i in UOMConversionDetail.objects.filter(item=item.id):
             item_data['conversion_detail'].append({
+                "id": i.id,
                 "uom": i.uom.id,
                 "conversion_factor": i.conversion_factor
             })
@@ -111,14 +116,13 @@ class ItemView(APIView):
         for i in ItemPrice.objects.filter(item=item.id):
             item_data['item_prices'].append({
                 "price_list": i.price_list.id,
+                "id": i.id,
                 "price": i.price,
                 "uom": i.base_uom.id
             })
 
         for i in SupplierItems.objects.filter(item=item.id):
-            item_data['supplier_items'].append({
-                "supplier": i.supplier.id
-            })
+            item_data['supplier_items'].append(SupplierItemsSerializer(i).data)
 
         return item_data
 
@@ -203,6 +207,83 @@ class ItemView(APIView):
 
 
 
+
+
+class ItemDetailsView(APIView):
+    def post(self, request, item_detail):
+        request_data = request.data 
+
+        try:
+            item = get_stock_doc("item", request_data.get("item_code"))
+            request_data.update({
+                "item": item
+            })
+            request_data.pop("item_code")
+            
+            if item_detail == "item_price":
+                insert_item_price(request_data)
+            elif item_detail == "supplier_items":
+                insert_supplier_items(request_data)
+
+            itemview = ItemView()
+            data = itemview.get_data(item)
+            return Response(data)
+        except Exception as e:
+            return Response(str(e))
+
+
+    def put(self, request, item_detail):
+        request_data = request.data
+
+        if request_data.get("id"):
+            item = get_stock_doc("item", request_data.get("item_code"))
+
+            request_data.update({
+                "item": request_data.get("item_code")
+            })
+            request_data.pop("item_code")
+            
+            if item_detail == "item_price":
+                inst = get_object_or_404(ItemPrice.objects.all(), id=request_data.get("id"))
+                serializer = ItemPriceSerializer(inst, data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response(serializer.data, status=status.HTTP_200_OK)
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            elif item_detail == "supplier_items":
+                try:
+                    inst = get_object_or_404(SupplierItems.objects.all(), id=request_data.get("id"))
+                    inst.supplier = get_stock_doc("supplier", request_data['supplier'])
+                    inst.item = item
+                    inst.save()
+                    return Response(SupplierItemsSerializer(inst).data)
+                except Exception as e:
+                    return Response(str(e))
+        else:
+            return Response("Please enter ID", status=status.HTTP_400_BAD_REQUEST)
+
+
+    def delete(self, request, item_detail):
+        ids = request.data['ids']
+        model_serializer = {
+            "item_price": [ItemPrice, ItemPriceSerializer],
+            "supplier_items": [SupplierItems, SupplierItemsSerializer]
+        }
+        for id in ids: 
+            try:
+                inst = get_object_or_404(model_serializer[item_detail][0], id=id)
+                move_to_deleted_document(item_detail, id, json.dumps(model_to_dict(inst)), request.user)
+                
+                inst.delete() 
+            except Exception as e:
+                return Response("ID {} Not Found".format(id), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        return Response("Successfully deleted", status=status.HTTP_200_OK)
+
+
+
 # insert item
 def insert_item(data):
     item_id = set_naming_series("ITM")
@@ -232,7 +313,6 @@ def insert_item(data):
         "default_income_account": get_stock_doc("coa", data['default_income_account']), #FK
         "default_cos_account": get_stock_doc("coa", data['default_cos_account']), #FK
     }
-    print(get_stock_doc("uom", data['purchase_uom']))
 
     if data['fixed_asset_group']:
         item_data.update({
@@ -265,22 +345,22 @@ def insert_item(data):
     # item price
     item_prices_data = [
         {
-            "price_list": get_stock_doc("price_list", "Buying"),
+            "price_list": "Buying",
             "price": data['buying_price_uom'],
             "item": item,
-            "base_uom": get_stock_doc("uom", data['base_uom']) if not data['purchase_uom'] else get_stock_doc("uom", data['purchase_uom'])
+            "base_uom": data['base_uom'] if not data['purchase_uom'] else data['purchase_uom']
         },
         {
-            "price_list": get_stock_doc("price_list", "Selling"),
+            "price_list": "Selling",
             "price": data['selling_price_uom'],
             "item": item,
-            "base_uom": get_stock_doc("uom", data['base_uom']) if not data['sales_uom'] else get_stock_doc("uom", data['sales_uom'])
+            "base_uom": data['base_uom'] if not data['sales_uom'] else data['sales_uom']
         },
         {
-            "price_list": get_stock_doc("price_list", "Transfer"),
+            "price_list": "Transfer",
             "price": data['transfer_price_uom'],
             "item": item,
-            "base_uom": get_stock_doc("uom", data['base_uom'])
+            "base_uom": data['base_uom']
         },
     ]
 
@@ -293,7 +373,11 @@ def insert_item(data):
 def insert_item_price(data):
     item_price_id = "{}-{}-{}".format(data['item'].id, data['price_list'], data['base_uom'])
     data.update({
-            "id": item_price_id
+            "id": item_price_id,
+            "price_list": get_stock_doc("price_list", data['price_list']),
+            "base_uom": get_stock_doc("uom", data['base_uom']),
+            "price": data['price'],
+            "item": data['item']  ## item must be instance
         })
     ItemPrice.objects.create(**data)
     
@@ -305,7 +389,7 @@ def insert_conversion_detail(data):
 def insert_supplier_items(data):
     supplier_items_data = {
         "supplier": get_stock_doc("supplier", data['supplier']),
-        "item": data['item'],
+        "item": data['item'], ## item must be an instance
     }
 
     SupplierItems.objects.create(**supplier_items_data)
@@ -319,7 +403,8 @@ def get_stock_doc(table_name, id):
         "coa": ChartOfAccounts,
         "fixed_asset": FixedAssetGroup,
         "price_list": PriceList,
-        "supplier": Supplier
+        "supplier": Supplier,
+        "item": Item
     }
     
     obj = table[table_name].objects.get(id=id)

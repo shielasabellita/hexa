@@ -1,6 +1,10 @@
 from typing import ChainMap
 from rest_framework import serializers
 from api.models import ItemCategory, ItemCatBrand, ItemCatDepartment, ItemCatForm, ItemCatManufacturer, ItemCatSection, ItemCatSize, UOM
+from api.models.buying.supplier_model import SupplierItems
+from api.models.stock.item_model import ItemPrice
+from api.serializers.buying.supplier_serializer import SupplierSerializer
+
 
 class ItemCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -47,4 +51,17 @@ class ItemCatSizeSerializer(serializers.ModelSerializer):
 class UOMSerializer(serializers.ModelSerializer):
     class Meta:
         model = UOM
+        fields = '__all__'
+
+
+class SupplierItemsSerializer(serializers.ModelSerializer):
+    supplier = SupplierSerializer(read_only=True)
+    class Meta:
+        model = SupplierItems
+        fields = '__all__'
+
+
+class ItemPriceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ItemPrice
         fields = '__all__'

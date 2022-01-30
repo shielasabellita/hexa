@@ -46,37 +46,14 @@ class Item(models.Model):
 
     #FK
     base_uom = models.ForeignKey(UOM, on_delete=models.CASCADE, default="Unit")
-    item_group = models.ForeignKey(
-                ItemGroup, 
-                on_delete=models.CASCADE, 
-                related_name="item_group", 
-                default="Product")
+    item_group = models.ForeignKey(ItemGroup, on_delete=models.CASCADE, related_name="item_group", default="Product")
+    fixed_asset_group = models.ForeignKey(ItemGroup, on_delete=models.CASCADE, null=True, related_name="fixed_asset_group")
+    vat_group = models.ForeignKey(VatGroup, on_delete=models.CASCADE, null=True, related_name="vat_group")
+    default_income_account = models.ForeignKey(ChartOfAccounts, on_delete=models.CASCADE, null=True, related_name="default_income_account")
+    default_cos_account = models.ForeignKey(ChartOfAccounts, on_delete=models.CASCADE, null=True, related_name="default_cos_account")
 
-    fixed_asset_group = models.ForeignKey(
-                ItemGroup, 
-                on_delete=models.CASCADE, 
-                null=True, 
-                related_name="fixed_asset_group")
-
-    vat_group = models.ForeignKey(
-                VatGroup, 
-                on_delete=models.CASCADE, 
-                null=True, 
-                related_name="vat_group")
-
-    default_income_account = models.ForeignKey(
-                ChartOfAccounts, 
-                on_delete=models.CASCADE, 
-                null=True, 
-                related_name="default_income_account")
-                
-    default_cos_account = models.ForeignKey(
-                ChartOfAccounts, 
-                on_delete=models.CASCADE, 
-                null=True, 
-                related_name="default_cos_account")
-
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True)    
 
 class ItemPrice(models.Model):
     id = models.CharField(max_length=120, primary_key=True)
@@ -86,6 +63,8 @@ class ItemPrice(models.Model):
     price_list = models.ForeignKey(PriceList, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True)
 
 
 ## ITEM CHILD TABLES
@@ -97,6 +76,8 @@ class UOMConversionDetail(models.Model):
     uom = models.ForeignKey(UOM, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True)
 
 
 

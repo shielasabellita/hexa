@@ -14,7 +14,9 @@ from api.models.accounting.accounting_group_model import WithHoldingTaxGroup
 from api.models import CostCenter, PriceList, DiscountGroup, Supplier, SupplierGroup
 from api.serializers.buying.supplier_serializer import SupplierSerializer
 from api.views.stock.item_view import get_stock_doc
-
+from api.utils.helpers import move_to_deleted_document, get_company, get_doc
+from api.utils.naming import set_naming_series
+import json
 
 class SupplierView(APIView):
     # authentication_classes = (TokenAuthentication, )
@@ -48,8 +50,80 @@ class SupplierView(APIView):
             return Response(self.serializer_class(supplier_inst).data)
         except Exception as e:
             return Response(str(e))
+
+
+    def put(self, request, *args, **kwargs):
+        request_data = request.data
+        id = request_data['id']
+        
+        if id:
+            inst = get_object_or_404(self.model.objects.all(), id=id)
+            
+            validated_data = self.set_data(request_data)
+            print(validated_data)
+            
+            inst.sup_code = validated_data["sup_code"]
+            inst.sup_name = validated_data["sup_name"]
+            inst.sup_shortname = validated_data["sup_shortname"]
+            inst.check_payee_name = validated_data["check_payee_name"]
+            inst.is_trucker = validated_data["is_trucker"]
+            inst.tax_identification_no = validated_data["tax_identification_no"]
+            inst.term = validated_data["term"]
+            inst.email = validated_data["email"]
+            inst.phone = validated_data["phone"]
+            inst.street = validated_data["street"]
+            inst.brgy = validated_data["brgy"]
+            inst.city = validated_data["city"]
+            inst.province = validated_data["province"]
+            inst.postal_code = validated_data["postal_code"]
+
+            
+            if request_data.get("supplier_group"):
+                inst.supplier_group = validated_data["supplier_group"]
+            if request_data.get("cost_center"): 
+                inst.cost_center = validated_data["cost_center"]
+            if request_data.get("vat_group"):
+                inst.vat_group = validated_data["vat_group"]
+            if request_data.get("default_pricelist"):
+                inst.default_pricelist = validated_data["default_pricelist"]
+
+            if request_data.get("wht"):
+                inst.wht = validated_data['wht']
+            if request_data.get("discount_group1"):
+                inst.discount_group1 = validated_data['discount_group1']
+            if request_data.get("discount_group2"):
+                inst.discount_group2 = validated_data['discount_group2']
+            if request_data.get("discount_group3"):
+                inst.discount_group3 = validated_data['discount_group3']
+            if request_data.get("default_expense_account"):
+                inst.default_expense_account = validated_data['default_expense_account']
+            if request_data.get("default_payable_account"):
+                inst.default_payable_account = validated_data['default_payable_account']
+
+            inst.save()
+
+            return Response(self.serializer_class(inst).data)
+
+        else:
+            return Response("Please enter a valid ID", status=status.HTTP_400_BAD_REQUEST)
     
+    def delete(self, request, *args, **kwargs):
+        ids = request.data['ids']
+        
+        for id in ids: 
+            try:
+                inst = get_object_or_404(self.model.objects.all(), id=id)
+                move_to_deleted_document("Supplier", id, json.dumps(model_to_dict(inst)), request.user)
+                
+                inst.delete() 
+            except Exception as e:
+                return Response("ID {} Not Found".format(id), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        return Response("Successfully deleted", status=status.HTTP_200_OK)
+
+
     def set_data(self, post_data):
+        # if not post_data.get("id"):
         data = {
             "id": "{}_{}".format(str(post_data.get("sup_code")).upper(), str(post_data.get("sup_name")).upper()),
             "sup_code": post_data.get("sup_code"),
