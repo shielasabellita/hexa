@@ -77,7 +77,7 @@ class CostCenter(models.Model):
 
 
 class Branch(models.Model):
-    id = models.BigAutoField(primary_key=True)
+    id = models.CharField(max_length=120, primary_key=True)
     branch_code = models.CharField(max_length=45)
     branch_name = models.CharField(max_length=45)
     branch_shortname = models.CharField(max_length=45)
@@ -92,7 +92,7 @@ class Branch(models.Model):
 
 
 class Location(models.Model):
-    id = models.BigAutoField(primary_key=True)
+    id = models.CharField(max_length=120, primary_key=True)
     location_code = models.CharField(max_length=120)
     location_name = models.CharField(max_length=120)
     location_shortname = models.CharField(max_length=120)

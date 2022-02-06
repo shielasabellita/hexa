@@ -24,6 +24,7 @@ urlpatterns = [
     path('company/<company_code>', CompanyView.as_view(), name='company_view'),
     path('accounting_period_list/<company_code>', AccountingPeriodView.as_view(), name='accounting_period_view'),
     path('coa_list/<company_code>', ChartOfAccountsView.as_view(), name='coa_view'),
+    path('accounts/<location>', LocationBranchView.as_view(), name='location_branch'),
 
     # accounting group
     path('accounting/group/<group>', AccountingGroup.as_view(), name='accounting_group_view'),
@@ -34,6 +35,9 @@ urlpatterns = [
     path('stock/item/item_detail/<item_detail>', ItemDetailsView.as_view(), name='item_details'),
 
     # buying module
-    path('buying/supplier', SupplierView.as_view(), name='supplier')
+    path('buying/supplier', SupplierView.as_view(), name='supplier'),
+
+    # hr module
+    # path('hr/employee'),
     
 ]
