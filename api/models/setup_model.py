@@ -103,5 +103,5 @@ class Location(models.Model):
     updated_at = models.DateTimeField(auto_now=True, blank=True)
     
     # FK
-    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
     
