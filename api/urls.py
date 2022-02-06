@@ -5,6 +5,7 @@ from api.views.views import *
 from api.views.stock import *
 from api.views.auth_view import *
 from api.views.buying import *
+from api.views.hr import *
 # from . import views
 
 
@@ -38,6 +39,6 @@ urlpatterns = [
     path('buying/supplier', SupplierView.as_view(), name='supplier'),
 
     # hr module
-    # path('hr/employee'),
+    path('hr/employee', EmployeeView.as_view(), name='employee'),
     
 ]

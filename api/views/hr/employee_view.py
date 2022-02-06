@@ -5,12 +5,16 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from django.shortcuts import get_object_or_404
+from django.forms.models import model_to_dict
+from api.utils.naming import set_naming_series
+
 # models
-from api.models import Company, Branch, Location
-from api.models.system_model import Series
+from api.models import Employee
 
 # serializers
-from api.serializers.accounting import LocationSerializer, BranchSerializer
+from api.serializers.hr.employee_serializer import EmployeeSerializer
 
 # other plugins
 import pandas as pd
@@ -19,29 +23,22 @@ import json
 # helpers
 from api.utils.helpers import move_to_deleted_document
 
-from django.shortcuts import get_object_or_404
-from django.forms.models import model_to_dict
-from api.utils.naming import set_naming_series
-
-models_and_serializers = {
-    "branch": [Branch, BranchSerializer],
-    "location": [Location, LocationSerializer],
-}
-
-class LocationBranchView(APIView):
-    authentication_classes = (TokenAuthentication, )
-    permission_classes = [IsAuthenticated]
 
 
-    def get(self, request, location):
+class EmployeeView(APIView):
+    # authentication_classes = (TokenAuthentication, )
+    # permission_classes = [IsAuthenticated]
+
+
+    def get(self, request):
         try:
             id = request.GET.get('id', None)
-            inst = models_and_serializers[location][0].objects.all()
-            serializer = models_and_serializers[location][1](inst, many=True)
+            inst = Employee.objects.all()
+            serializer = EmployeeSerializer(inst, many=True)
 
             if id != None:
-                inst = get_object_or_404(models_and_serializers[location][0], id=id)
-                serializer = models_and_serializers[location][1](inst)
+                inst = get_object_or_404(Employee, id=id)
+                serializer = EmployeeSerializer(inst)
             
             data = serializer.data
             return Response(data, status=status.HTTP_200_OK)
@@ -49,15 +46,14 @@ class LocationBranchView(APIView):
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-    def post(self, request, location):
+    def post(self, request):
         data = request.data 
 
-        prefix = "BRC" if location == "branch" else "LOC"
         data.update({
-            "id": set_naming_series(prefix)
+            "id": set_naming_series("EMP")
         })
 
-        serializer = models_and_serializers[location][1](data=data)
+        serializer = EmployeeSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
 
@@ -66,12 +62,12 @@ class LocationBranchView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-    def put(self, request, location):
+    def put(self, request):
         id = request.data['id']
 
         if id:
-            inst = get_object_or_404(models_and_serializers[location][0].objects.all(), id=id)
-            serializer = models_and_serializers[location][1](inst, data=request.data)
+            inst = get_object_or_404(Employee.objects.all(), id=id)
+            serializer = EmployeeSerializer(inst, data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -82,13 +78,13 @@ class LocationBranchView(APIView):
             return Response("Please enter ID", status=status.HTTP_400_BAD_REQUEST)
 
 
-    def delete(self, request, location):
+    def delete(self, request):
         ids = request.data['ids']
         
         for id in ids: 
             try:
-                inst = get_object_or_404(models_and_serializers[location][0].objects.all(), id=id)
-                move_to_deleted_document(location, id, json.dumps(model_to_dict(inst)), request.user)
+                inst = get_object_or_404(Employee.objects.all(), id=id)
+                move_to_deleted_document("Employee", id, json.dumps(model_to_dict(inst)), request.user)
                 inst.delete()
             except Exception as e:
                 return Response("ID {} Not Found".format(id), status=status.HTTP_500_INTERNAL_SERVER_ERROR)

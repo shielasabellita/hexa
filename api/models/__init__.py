@@ -2,6 +2,7 @@
 from .buying import *
 from .stock import *
 from .accounting import *
+from .hr import *
 
 from .defaults_model import *
 from .setup_model import *
