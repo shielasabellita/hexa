@@ -185,21 +185,21 @@ class ItemView(APIView):
         if not data['default_income_account']:
             if data['item_group'] in ["Product"]:
                 data.update({
-                        "default_income_account": "4010 - Sales - {}".format(company['company_code'])
+                        "default_income_account": "4010 - Sales"
                     })
             elif data['item_group'] in ['Material']:
                 data.update({
-                    "default_income_account": "4000 - Revenue - {}".format(company['company_code'])
+                    "default_income_account": "4000 - Revenue"
                 })
 
         if not data['default_cos_account']:
             if data['item_group'] in ["Product"]:
                 data.update({
-                        "default_cos_account": "5050 - Cost of Sales - {}".format(company['company_code'])
+                        "default_cos_account": "5050 - Cost of Sales"
                     })
             elif data['item_group'] in ['Material']:
                 data.update({
-                    "default_cos_account": "5000 - Labor - COS - {}".format(company['company_code'])
+                    "default_cos_account": "5000 - Labor - COS"
                 })
 
 

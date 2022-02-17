@@ -104,7 +104,7 @@ class SetupDefaultsView(APIView):
         for coa in coas:
 
             coa.update({
-                "id": "{} - {} - {}".format(coa['account_code'], coa['account_name'], company.company_code)
+                "id": "{} - {}".format(coa['account_code'], coa['account_name'])
             })
 
             ChartOfAccounts.objects.create(**coa, company=company)
