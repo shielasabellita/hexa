@@ -1,6 +1,5 @@
-from os import stat
-from pkgutil import get_data
 from django.db.models.base import Model
+from numpy import insert
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -8,24 +7,26 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.forms.models import model_to_dict
+from setuptools import Require
 from api import serializers
 from api.models.accounting.accounting_group_model import WithHoldingTaxGroup
 
-from api.models import CostCenter, PriceList, DiscountGroup, Supplier, SupplierGroup
-from api.serializers.buying.supplier_serializer import SupplierSerializer
+from api.models import CostCenter, PriceList, DiscountGroup, Supplier, SupplierGroup, SupplierDiscounts
+from api.serializers.buying.supplier_serializer import SupplierDiscountsSerializer, SupplierSerializer
 from api.views.stock.item_view import get_stock_doc
 from api.utils.helpers import move_to_deleted_document, get_company, get_doc
 from api.utils.naming import set_naming_series
 import json
 
+
 class SupplierView(APIView):
-    authentication_classes = (TokenAuthentication, )
-    permission_classes = [IsAuthenticated]
+    # authentication_classes = (TokenAuthentication, )
+    # permission_classes = [IsAuthenticated]
     
     model = Supplier
     serializer_class = SupplierSerializer
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request):
         inst = self.model.objects.all()
         data = self.serializer_class(inst, many=True).data
         
@@ -33,88 +34,43 @@ class SupplierView(APIView):
         if id:
             try:
                 supplier = self.model.objects.get(id=id)
-                data = self.serializer_class(supplier).data
+                data = self.get_data(supplier)
                 return Response(data, status=status.HTTP_200_OK)
             except Exception as e:
                 return Response(str(e))
 
         return Response(data, status=status.HTTP_200_OK)
 
-
-    def post(self, request, *args, **kwargs):
-        post_data = request.data 
+    def post(self, request):
         try:
-            supplier_data = self.set_data(post_data)
-            supplier_inst = Supplier.objects.create(**supplier_data)
-            
-            return Response(self.serializer_class(supplier_inst).data)
+            inst = insert_supplier(request.data)
+            data = self.get_data(inst)
+            return Response(data)
         except Exception as e:
             return Response(str(e))
 
-
-    def put(self, request, *args, **kwargs):
+    def put(self, request):
         request_data = request.data
-        id = request_data['id']
+
+        if request_data.get("id"):
+            inst = Supplier.objects.get(id=request_data.get("id"))
+            serializer = SupplierSerializer(inst, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(self.get_data(inst), status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-        if id:
-            inst = get_object_or_404(self.model.objects.all(), id=id)
-            
-            validated_data = self.set_data(request_data)
-            print(validated_data)
-            
-            inst.sup_code = validated_data["sup_code"]
-            inst.sup_name = validated_data["sup_name"]
-            inst.sup_shortname = validated_data["sup_shortname"]
-            inst.check_payee_name = validated_data["check_payee_name"]
-            inst.is_trucker = validated_data["is_trucker"]
-            inst.tax_identification_no = validated_data["tax_identification_no"]
-            inst.term = validated_data["term"]
-            inst.email = validated_data["email"]
-            inst.phone = validated_data["phone"]
-            inst.street = validated_data["street"]
-            inst.brgy = validated_data["brgy"]
-            inst.city = validated_data["city"]
-            inst.province = validated_data["province"]
-            inst.postal_code = validated_data["postal_code"]
-
-            
-            if request_data.get("supplier_group"):
-                inst.supplier_group = validated_data["supplier_group"]
-            if request_data.get("cost_center"): 
-                inst.cost_center = validated_data["cost_center"]
-            if request_data.get("vat_group"):
-                inst.vat_group = validated_data["vat_group"]
-            if request_data.get("default_pricelist"):
-                inst.default_pricelist = validated_data["default_pricelist"]
-
-            if request_data.get("wht"):
-                inst.wht = validated_data['wht']
-            if request_data.get("discount_group1"):
-                inst.discount_group1 = validated_data['discount_group1']
-            if request_data.get("discount_group2"):
-                inst.discount_group2 = validated_data['discount_group2']
-            if request_data.get("discount_group3"):
-                inst.discount_group3 = validated_data['discount_group3']
-            if request_data.get("default_expense_account"):
-                inst.default_expense_account = validated_data['default_expense_account']
-            if request_data.get("default_payable_account"):
-                inst.default_payable_account = validated_data['default_payable_account']
-
-            inst.save()
-
-            return Response(self.serializer_class(inst).data)
-
         else:
             return Response("Please enter a valid ID", status=status.HTTP_400_BAD_REQUEST)
+
     
-    def delete(self, request, *args, **kwargs):
+    def delete(self, request):
         ids = request.data['ids']
-        
         for id in ids: 
             try:
-                inst = get_object_or_404(self.model.objects.all(), id=id)
+                inst = Supplier.objects.get(id=id)
                 move_to_deleted_document("Supplier", id, json.dumps(model_to_dict(inst)), request.user)
-                
                 inst.delete() 
             except Exception as e:
                 return Response("ID {} Not Found".format(id), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -122,72 +78,112 @@ class SupplierView(APIView):
         return Response("Successfully deleted", status=status.HTTP_200_OK)
 
 
-    def set_data(self, post_data):
-        # if not post_data.get("id"):
-        data = {
-            "id": "{}_{}".format(str(post_data.get("sup_code")).upper(), str(post_data.get("sup_name")).upper()),
-            "sup_code": post_data.get("sup_code"),
-            "sup_name": post_data.get("sup_name"),
-            "sup_shortname": post_data.get("sup_shortname"),
-            "check_payee_name": post_data.get("check_payee_name"),
-            "is_trucker": post_data.get("is_trucker"),
-            "tax_identification_no": post_data.get("tax_identification_no"),
-            "term": post_data.get("term"),
-            "email": post_data.get("email"),
-            "phone": post_data.get("phone"),
-            "street": post_data.get("street"),
-            "brgy": post_data.get("brgy"),
-            "city": post_data.get("city"),
-            "province": post_data.get("province"),
-            "postal_code": post_data.get("postal_code"),
-            "supplier_group": get_buying_doc("supplier_group", post_data.get("supplier_group")),
-            "cost_center": get_buying_doc("costcenter", post_data.get("cost_center")),
-            "vat_group": get_stock_doc("vat_group", post_data.get("vat_group")),
-            "default_pricelist": PriceList.objects.get(id="Buying")
-        }
+    def get_data(self, supplier):
+        supplier_data = self.serializer_class(supplier).data
+        supplier_discs_insts = SupplierDiscounts.objects.filter(supplier=supplier)
+        supplier_discs_data = SupplierDiscountsSerializer(supplier_discs_insts, many=True).data
+        supplier_data.update({
+            "discount_groups": supplier_discs_data
+        })
 
-        if post_data.get("wht"):
-            data.update({"wht": get_buying_doc("wht", post_data.get("wht"))})
-        
-        if post_data.get("discount_group1"):
-            data.update({"discount_group1": get_buying_doc("discount_group", post_data.get("discount_group1"))})
-        
-        if post_data.get("discount_group2"):
-            data.update({"discount_group2": get_buying_doc("discount_group", post_data.get("discount_group2"))})
-        
-        if post_data.get("discount_group3"):
-            data.update({"discount_group3": get_buying_doc("discount_group", post_data.get("discount_group3"))})
-        
-        post_expense = post_data.get("default_expense_account")
-        if post_expense:
-            data.update({"default_expense_account": get_stock_doc("coa", post_expense)})
-
-        post_payable = post_data.get("default_payable_account")
-        if post_payable:
-            validate_payable_account(post_payable.split(" - ")[0])
-            data.update({"default_payable_account": get_stock_doc("coa", post_data.get("default_payable_account"))})
-
-        return data
+        return supplier_data
 
 
 def insert_supplier(data):
-    Supplier.objects.create(**data)
+    sup_id = set_naming_series("SUP")
+    supplier_data = data
+    discount_groups = data.get("discount_groups")
+    supplier_data.pop("discount_groups")
+    supplier_data.update({
+        "id": sup_id
+    })
+
+    serializer = SupplierSerializer(data=supplier_data)
+    if serializer.is_valid():
+        serializer.save()
+        supplier_inst = Supplier.objects.get(id=sup_id)
+
+        if discount_groups:
+            for disc in discount_groups:
+                if not SupplierDiscounts.objects.filter(discount_group=disc, supplier=sup_id):
+                    save_supplier_discount(disc, supplier_inst)
+                else:
+                    save_supplier_discount(disc, supplier_inst, method="update", id=disc)
+
+        return supplier_inst
 
 
-
-def get_buying_doc(table_name, id):
-    table = {
-        "discount_group": DiscountGroup,
-        "supplier_group": SupplierGroup,
-        "costcenter": CostCenter,
-        "wht": WithHoldingTaxGroup
+def save_supplier_discount(disc_group, supplier_inst, method="create", id=None):
+    discount_group_inst = DiscountGroup.objects.get(id=disc_group)
+    dt = {
+        "supplier": supplier_inst,
+        "discount_group": discount_group_inst
     }
+    if method=="create":
+        SupplierDiscounts.objects.create(**dt)
+    else:
+        disc_inst = SupplierDiscounts.objects.get(id=id)
+        disc_inst.discount_group = discount_group_inst
+        disc_inst.suplier = supplier_inst
+        disc_inst.save()
 
-    obj = table[table_name].objects.get(id=id)
-    return obj
+    sup_discs = SupplierDiscounts.objects.filter(supplier=supplier_inst)
+    return SupplierDiscountsSerializer(instance=sup_discs, many=True)
 
 
-def validate_payable_account(account_code, company=None):
-    if account_code not in ("2000", "5040"):
-        raise "Payable account must be either Progress Billing or Work in Progress"
-        
+
+class SupplierDiscountView(APIView):
+    model = SupplierDiscounts
+    serializer_class = SupplierDiscountsSerializer
+    
+    def get(self, request):
+        inst = self.model.objects.all()
+        data = self.serializer_class(inst, many=True).data
+
+        id = request.GET.get('id', None)
+        if id:
+            try:
+                inst = self.model.objects.get(id=id)
+                data = self.serializer_class(inst).data
+                return Response(data, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response(str(e))
+
+        return Response(data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        request_data = request.data
+        try:
+            supplier_discount = save_supplier_discount(
+                disc_group = request_data.get("discount_group"),
+                supplier_inst = Supplier.objects.get(id=request_data.get("supplier")),
+                method = "create"
+            )
+            return Response(supplier_discount.data)
+        except Exception as e:
+            return Response(str(e))
+
+    def put(self, request):
+        request_data = request.data
+        try:
+            supplier_discount = save_supplier_discount(
+                disc_group = request_data.get("discount_group"),
+                supplier_inst = Supplier.objects.get(id=request_data.get("supplier")),
+                method = "update",
+                id = request_data.get("id")
+            )
+            return Response(supplier_discount.data)
+        except Exception as e:
+            return Response(str(e))
+
+    def delete(self, request):
+        ids = request.data['ids']
+        for id in ids: 
+            try:
+                inst = SupplierDiscounts.objects.get(id=id)
+                move_to_deleted_document("Supplier Discount", id, json.dumps(model_to_dict(inst)), request.user)
+                inst.delete() 
+            except Exception as e:
+                return Response("ID {} Not Found".format(id), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response("Successfully deleted", status=status.HTTP_200_OK)

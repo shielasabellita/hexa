@@ -39,25 +39,25 @@ class SetupDefaultsView(APIView):
                 company = Company(**data['company'])
                 company.save()
 
-            try:
-                data['accounting_period'].update({
-                    "id": "{} - {}".format(data['accounting_period']['acctng_period_code'], company.company_code)
-                })
-                AccountingPeriod.objects.create(**data['accounting_period'], company=company)
-                self.sync_coa(company)
-                self.sync_reason_codes()
-                self.sync_vatgroup()
-                self.sync_fixed_asset_group()
-                self.sync_itemgroup()
-                self.sync_uom()
-                self.sync_series()
-                self.sync_price_list()
-                self.sync_supplier_group()
-                self.sync_costcenter()
+            # try:
+            data['accounting_period'].update({
+                "id": "{} - {}".format(data['accounting_period']['acctng_period_code'], company.company_code)
+            })
+            AccountingPeriod.objects.create(**data['accounting_period'], company=company)
+            self.sync_coa(company)
+            self.sync_reason_codes()
+            self.sync_vatgroup()
+            self.sync_fixed_asset_group()
+            self.sync_itemgroup()
+            self.sync_uom()
+            self.sync_series()
+            self.sync_price_list()
+            self.sync_supplier_group()
+            self.sync_costcenter()
 
-                return Response(CompanySerializer(company).data, status=status.HTTP_200_OK)
-            except Exception as e:
-                return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(CompanySerializer(company).data, status=status.HTTP_200_OK)
+            # except Exception as e:
+            #     return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         else:
             return Response("Database already used", status=status.HTTP_403_FORBIDDEN)

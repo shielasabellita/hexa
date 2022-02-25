@@ -37,6 +37,7 @@ urlpatterns = [
 
     # buying module
     path('buying/supplier', SupplierView.as_view(), name='supplier'),
+    path('buying/supplier/disc_group', SupplierDiscountView.as_view(), name='supplier_discount_view'),
 
     # hr module
     path('hr/employee', EmployeeView.as_view(), name='employee'),
