@@ -105,3 +105,7 @@ class Location(models.Model):
     # FK
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
     
+
+class ParentCompany(models.Model):
+    id = models.CharField(max_length=120, primary_key=True)
+    

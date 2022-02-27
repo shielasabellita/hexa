@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from api.models import Company, AccountingPeriod, StatusAndRCode
-from api.models.setup_model import ChartOfAccounts
+from api.models import Company, AccountingPeriod, StatusAndRCode, ChartOfAccounts, ParentCompany
 
 
 class CompanySerializer(serializers.ModelSerializer):
@@ -25,4 +24,9 @@ class ChartOfAccountsSerializer(serializers.ModelSerializer):
     company = CompanySerializer(read_only=True)
     class Meta:
         model = ChartOfAccounts
+        fields = '__all__'
+
+class ParentCompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ParentCompany
         fields = '__all__'

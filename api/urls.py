@@ -23,6 +23,7 @@ urlpatterns = [
     path('setup', SetupDefaultsView.as_view(), name='setups_default'),
     path('setup/<company_code>', SetupDefaultsView.as_view(), name='get_setups_default'),
     path('company/<company_code>', CompanyView.as_view(), name='company_view'),
+    path('parent_company', ParentCompanyView.as_view(), name='parent_company_view'),
     path('accounting_period_list/<company_code>', AccountingPeriodView.as_view(), name='accounting_period_view'),
     path('coa_list/<company_code>', ChartOfAccountsView.as_view(), name='coa_view'),
     path('accounts/<location>', LocationBranchView.as_view(), name='location_branch'),
