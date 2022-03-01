@@ -18,6 +18,7 @@ urlpatterns = [
 
     # system
     path('login', LoginView.as_view(), name='login'),
+    path('logout', LogoutView.as_view(), name='logout'),
     
     #settings
     path('setup', SetupDefaultsView.as_view(), name='setups_default'),
