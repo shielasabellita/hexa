@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     
     # 'debug_toolbar',
     'rest_framework',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -61,6 +62,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     
+    # CORS
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -168,3 +172,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ]
 }
+
+CORS_ALLOWED_ORIGINS = []
+
+for origin in str(os.getenv('ORIGINS')).split(","):
+    CORS_ALLOWED_ORIGINS.append(origin)
