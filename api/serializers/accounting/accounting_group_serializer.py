@@ -1,6 +1,6 @@
 from typing import ChainMap
 from rest_framework import serializers
-from api.models import VatGroup, DiscountGroup, SupplierGroup, WithHoldingTaxGroup, Branch, Location
+from api.models import VatGroup, DiscountGroup, SupplierGroup, WithHoldingTaxGroup, Branch, Location, CostCenter
 
 
 class VatGroupSerializer(serializers.ModelSerializer):
@@ -36,4 +36,10 @@ class BranchSerializer(serializers.ModelSerializer):
 class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
+        fields = '__all__'
+
+
+class CostCenterSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = CostCenter
         fields = '__all__'

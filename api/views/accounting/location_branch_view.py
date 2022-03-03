@@ -6,11 +6,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 # models
-from api.models import Company, Branch, Location
+from api.models import Company, Branch, Location, CostCenter
 from api.models.system_model import Series
 
 # serializers
-from api.serializers.accounting import LocationSerializer, BranchSerializer
+from api.serializers.accounting import LocationSerializer, BranchSerializer, CostCenterSerializer
 
 # other plugins
 import pandas as pd
@@ -26,6 +26,7 @@ from api.utils.naming import set_naming_series
 models_and_serializers = {
     "branch": [Branch, BranchSerializer],
     "location": [Location, LocationSerializer],
+    "costcenter": [CostCenter, CostCenterSerializer]
 }
 
 class LocationBranchView(APIView):
@@ -52,10 +53,15 @@ class LocationBranchView(APIView):
     def post(self, request, location):
         data = request.data 
 
-        prefix = "BRC" if location == "branch" else "LOC"
-        data.update({
-            "id": set_naming_series(prefix)
-        })
+        if location == "costcenter":
+            data.update({
+                "id": data['cost_center_name']
+            })
+        else:
+            prefix = "BRC" if location == "branch" else "LOC"
+            data.update({
+                "id": set_naming_series(prefix)
+            })
 
         serializer = models_and_serializers[location][1](data=data)
         if serializer.is_valid():
