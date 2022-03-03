@@ -26,14 +26,14 @@ from api.utils.helpers import move_to_deleted_document
 
 
 class EmployeeView(APIView):
-    # authentication_classes = (TokenAuthentication, )
-    # permission_classes = [IsAuthenticated]
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = [IsAuthenticated]
 
 
     def get(self, request):
         try:
             id = request.GET.get('id', None)
-            inst = Employee.objects.all()
+            inst = Employee.objects.all().order_by("-updated_at")
             serializer = EmployeeSerializer(inst, many=True)
 
             if id != None:

@@ -35,7 +35,7 @@ class AccountingGroup(APIView):
     def get(self, request, group, *args, **kwargs):
         try:
             id = request.GET.get('id', None)
-            inst = models_and_serializers[group][0].objects.all()
+            inst = models_and_serializers[group][0].objects.all().order_by("-updated_at")
             serializer = models_and_serializers[group][1](inst, many=True)
 
             if id != None:

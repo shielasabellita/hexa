@@ -35,7 +35,7 @@ class ItemView(APIView):
     
     
     def get(self, request, *args, **kwargs): 
-        inst = self.model.objects.all()
+        inst = self.model.objects.all().order_by("-updated_at")
         data = self.serializer_class(inst, many=True).data
         
         id = request.GET.get('id', None)

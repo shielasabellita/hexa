@@ -37,7 +37,7 @@ class CategoryManagement(APIView):
     def get(self, request, category):
         try:
             id = request.GET.get('id', None)
-            inst = models_and_serializers[category][0].objects.all()
+            inst = models_and_serializers[category][0].objects.all().order_by("-updated_at")
             serializer = models_and_serializers[category][1](inst, many=True)
 
             if id != None:
