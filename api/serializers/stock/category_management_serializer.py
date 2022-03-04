@@ -1,8 +1,8 @@
 from typing import ChainMap
 from rest_framework import serializers
 from api.models import ItemCategory, ItemCatBrand, ItemCatDepartment, ItemCatForm, ItemCatManufacturer, ItemCatSection, ItemCatSize, UOM
-from api.models.buying.supplier_model import SupplierItems
-from api.models.stock.item_model import ItemPrice
+from api.models.buying.supplier_model import SupplierItems, ItemPrice
+from api.models.stock.item_model import UOMConversionDetail
 from api.serializers.buying.supplier_serializer import SupplierSerializer
 
 
@@ -65,3 +65,9 @@ class ItemPriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemPrice
         fields = '__all__'
+
+
+class UOMConversionFactorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UOMConversionDetail
+        fields = "__all__"

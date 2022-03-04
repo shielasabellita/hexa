@@ -7,11 +7,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.forms.models import model_to_dict
-from api.models.buying.supplier_model import SupplierItems
 
 # models
 from api.models.stock.item_category_model import ItemCategory, ItemCatBrand, ItemCatDepartment, ItemCatForm, ItemCatManufacturer, ItemCatSection, ItemCatSize, UOM
-from api.models.stock.item_model import ItemPrice
 
 # serializers 
 from api.serializers.stock.category_management_serializer import *
@@ -89,10 +87,10 @@ class CategoryManagement(APIView):
         for id in ids: 
             try:
                 inst = get_object_or_404(models_and_serializers[category][0].objects.all(), id=id)
-                move_to_deleted_document(category, id, json.dumps(model_to_dict(inst)), request.user)
+                move_to_deleted_document(category, id, model_to_dict(inst), request.user)
                 inst.delete()
             except Exception as e:
-                return Response("ID {} Not Found".format(id), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response("Error on ID {}: {}".format(id, str(e)), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         return Response("Successfully deleted", status=status.HTTP_200_OK)
 

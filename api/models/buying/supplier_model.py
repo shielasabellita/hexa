@@ -57,18 +57,32 @@ class Supplier(models.Model):
     updated_at = models.DateTimeField(auto_now=True, blank=True)
 
 
-
+# supplier items
 class SupplierItems(models.Model):
     id = models.BigAutoField(primary_key=True)
     # FK
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
 
+
 # tag to supplier
 class SupplierDiscounts(models.Model):
     id = models.BigAutoField(primary_key=True)
     discount_group = models.ForeignKey(DiscountGroup, on_delete=models.CASCADE)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True)
+
+# item price per supplier
+class ItemPrice(models.Model):
+    id = models.CharField(max_length=120, primary_key=True)
+    price = models.FloatField(default=0.00)
+
+    base_uom = models.ForeignKey(UOM, on_delete=models.CASCADE)
+    price_list = models.ForeignKey(PriceList, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)

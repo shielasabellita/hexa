@@ -9,26 +9,25 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.forms.models import model_to_dict
-from api import serializers
 from api.models.accounting.accounting_group_model import VatGroup
 from api.models.defaults_model import PriceList
 from api.models.setup_model import ChartOfAccounts
 
 # models
-from api.models.stock import Item, FixedAssetGroup, ItemGroup, ItemPrice, UOMConversionDetail, UOM
-from api.models.buying import Supplier, SupplierItems
+from api.models.stock import Item, FixedAssetGroup, ItemGroup, UOMConversionDetail, UOM
+from api.models.buying import Supplier, SupplierItems, ItemPrice
 
 # serializers 
 from api.serializers.stock import ItemSerializer
-from api.serializers.stock.category_management_serializer import ItemPriceSerializer, SupplierItemsSerializer
-from api.utils.helpers import move_to_deleted_document, get_company, get_doc
+from api.serializers.stock.category_management_serializer import ItemPriceSerializer, SupplierItemsSerializer, UOMConversionFactorSerializer
+from api.utils.helpers import move_to_deleted_document
 from api.utils.naming import set_naming_series
 
 import json
 
 class ItemView(APIView):
-    # authentication_classes = (TokenAuthentication, )
-    # permission_classes = [IsAuthenticated]
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = [IsAuthenticated]
     
     model = Item
     serializer_class = ItemSerializer
@@ -54,12 +53,12 @@ class ItemView(APIView):
 
     def post(self, request):
         data = self.set_data(request.data)
-        try:
-            item = insert_item(data)
-            data = self.get_data(item)
-            return Response(data)
-        except Exception as e:
-            return Response(str(e))
+        # try:
+        item = insert_item(data)
+        data = self.get_data(item)
+        return Response(data)
+        # except Exception as e:
+        #     return Response(str(e))
 
 
 
@@ -89,14 +88,15 @@ class ItemView(APIView):
         for id in ids: 
             try:
                 inst = get_object_or_404(self.model.objects.all(), id=id)
-                move_to_deleted_document("Item", id, json.dumps(model_to_dict(inst)), request.user)
+                move_to_deleted_document("Item", id, model_to_dict(inst), request.user)
                 
                 inst.delete() 
             except Exception as e:
-                return Response("ID {} Not Found".format(id), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response("Error on ID {}: {}".format(id, str(e)), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         return Response("Successfully deleted", status=status.HTTP_200_OK)
     
+
     def get_data(self, item):
         item_data = self.serializer_class(item).data
         item_data.update({
@@ -118,7 +118,9 @@ class ItemView(APIView):
                 "price_list": i.price_list.id,
                 "id": i.id,
                 "price": i.price,
-                "uom": i.base_uom.id
+                "uom": i.base_uom.id,
+                "supplier": i.supplier.id,
+                "supplier_shortname": i.supplier.sup_shortname
             })
 
         for i in SupplierItems.objects.filter(item=item.id):
@@ -156,7 +158,8 @@ class ItemView(APIView):
 
             "buying_price_uom": post_data.get('buying_price_uom'),  
             "selling_price_uom": post_data.get('selling_price_uom'),  
-            "transfer_price_uom": post_data.get('transfer_price_uom'),  
+            "transfer_price_uom": post_data.get('transfer_price_uom'), 
+            "item_prices": post_data.get("item_prices")
 
         }
 
@@ -181,31 +184,48 @@ class ItemView(APIView):
         else:
             data.update({"fixed_asset_group": ""})
 
-        company = get_company(post_data['company'])
-        if not data['default_income_account']:
-            if data['item_group'] in ["Product"]:
-                data.update({
-                        "default_income_account": "4010 - Sales"
-                    })
-            elif data['item_group'] in ['Material']:
-                data.update({
-                    "default_income_account": "4000 - Revenue"
-                })
-
-        if not data['default_cos_account']:
-            if data['item_group'] in ["Product"]:
-                data.update({
-                        "default_cos_account": "5050 - Cost of Sales"
-                    })
-            elif data['item_group'] in ['Material']:
-                data.update({
-                    "default_cos_account": "5000 - Labor - COS"
-                })
-
-
+        data.update({
+            "default_income_account": self.validate_accounts(
+                data.get("item_group"), 
+                data.get("default_income_account"), 
+                "income")['default_income_account'],
+            "default_cos_account": self.validate_accounts(
+                data.get("item_group"), 
+                data.get("default_cos_account"), 
+                "cos")['default_cos_account'],
+        })
+        
+        print(data)
         return data
 
 
+    def validate_accounts(self, itemgroup, account, type):
+        cos_acc = ""
+        income_acc = ""
+        if itemgroup == "Product":
+            if type == "income":
+                income_acc = "4010 - Sales"
+                if account and account != income_acc:
+                    raise Exception("Product: not an Income account")
+            elif type == "cos":
+                cos_acc = "5050 - Cost of Sales"
+                if account and account != cos_acc:
+                    raise Exception("Product: not a Cost of Sales account")
+
+        elif itemgroup == "Material":
+            if type == "income":
+                income_acc = "4000 - Revenue"
+                if account and account != income_acc:
+                    raise Exception("Material: an Income account")
+            elif type == "cos":
+                cos_acc = "5000 - Labor - COS"
+                if account and account != cos_acc:
+                    raise Exception("Material: a Cost of Sales account")
+                    
+        return {
+            "default_income_account": income_acc,
+            "default_cos_account": cos_acc
+        }
 
 
 
@@ -227,6 +247,11 @@ class ItemDetailsView(APIView):
                 insert_item_price(request_data)
             elif item_detail == "supplier_items":
                 insert_supplier_items(request_data)
+            elif item_detail == "conversion_factor":
+                insert_conversion_detail(data={
+                    "conversion_factor": request_data.get("conversion_factor"),
+                    "item": item,
+                }, uom=request_data.get("base_uom"))
 
             itemview = ItemView()
             data = itemview.get_data(item)
@@ -264,6 +289,15 @@ class ItemDetailsView(APIView):
                     return Response(SupplierItemsSerializer(inst).data)
                 except Exception as e:
                     return Response(str(e))
+ 
+            elif item_detail == "conversion_factor":
+                inst = get_object_or_404(UOMConversionDetail.objects.all(), id=request_data.get("id"))
+                serializer = UOMConversionFactorSerializer(inst, data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response(serializer.data, status=status.HTTP_200_OK)
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response("Please enter ID", status=status.HTTP_400_BAD_REQUEST)
 
@@ -277,11 +311,11 @@ class ItemDetailsView(APIView):
         for id in ids: 
             try:
                 inst = get_object_or_404(model_serializer[item_detail][0], id=id)
-                move_to_deleted_document(item_detail, id, json.dumps(model_to_dict(inst)), request.user)
+                move_to_deleted_document(item_detail, id, model_to_dict(inst), request.user)
                 
                 inst.delete() 
             except Exception as e:
-                return Response("ID {} Not Found".format(id), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response("Error on ID {}: {}".format(id, str(e)), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         return Response("Successfully deleted", status=status.HTTP_200_OK)
 
@@ -335,57 +369,48 @@ def insert_item(data):
     if data['conversion_detail']:
         for uom in data['conversion_detail']:
             uom.update({
-                "item": item
+                "item": item,
+                "conversion_factor": uom.get("conversion_factor"),
             })
-            insert_conversion_detail(data = uom)
+            insert_conversion_detail(uom, uom.get("uom"))
     else: 
         insert_conversion_detail(data={
             "conversion_factor": 1,
-            "uom": get_stock_doc("uom", data['base_uom']),
-            "item": item,
-        })
+            "item": item
+        }, uom=data.get("base_uom"))
 
     # item price
-    item_prices_data = [
-        {
-            "price_list": "Buying",
-            "price": data['buying_price_uom'],
-            "item": item,
-            "base_uom": data['base_uom'] if not data['purchase_uom'] else data['purchase_uom']
-        },
-        {
-            "price_list": "Selling",
-            "price": data['selling_price_uom'],
-            "item": item,
-            "base_uom": data['base_uom'] if not data['sales_uom'] else data['sales_uom']
-        },
-        {
-            "price_list": "Transfer",
-            "price": data['transfer_price_uom'],
-            "item": item,
-            "base_uom": data['base_uom']
-        },
-    ]
-
-    for price in item_prices_data:
+    for price in data['item_prices']:
+        price.update({
+            "item": item
+        })
         insert_item_price(price)
 
     return item
 
 # insert item price
 def insert_item_price(data):
-    item_price_id = "{}-{}-{}".format(data['item'].id, data['price_list'], data['base_uom'])
+    item_price_id = set_naming_series("ITM-PRC")
     data.update({
             "id": item_price_id,
             "price_list": get_stock_doc("price_list", data['price_list']),
             "base_uom": get_stock_doc("uom", data['base_uom']),
             "price": data['price'],
-            "item": data['item']  ## item must be instance
+            "item": data['item'],  ## item must be instance,
+            "supplier": get_stock_doc("supplier", data['supplier']), ## can be not specified by supplier
         })
     ItemPrice.objects.create(**data)
     
 
-def insert_conversion_detail(data):
+def insert_conversion_detail(data, uom):
+    """
+        expected payload
+        conversion_factor, item (instance)
+    """
+    print(data)
+    data.update({
+        "uom": get_stock_doc("uom", uom)
+    })
     UOMConversionDetail.objects.create(**data)
 
 

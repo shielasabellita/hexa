@@ -94,10 +94,10 @@ class AccountingGroup(APIView):
         for id in ids: 
             try:
                 inst = get_object_or_404(models_and_serializers[group][0].objects.all(), id=id)
-                move_to_deleted_document(group, id, json.dumps(model_to_dict(inst)), request.user)
+                move_to_deleted_document(group, id, model_to_dict(inst), request.user)
                 inst.delete()
             except Exception as e:
-                return Response("ID {} Not Found".format(id), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response("Error on ID {}: {}".format(id, str(e)), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         return Response("Successfully deleted", status=status.HTTP_200_OK)
 

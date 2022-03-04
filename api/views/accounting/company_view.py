@@ -61,11 +61,11 @@ class CompanyView(APIView):
         for id in ids:
             try:
                 inst = Company.objects.get(company_code=id)
-                move_to_deleted_document("Company", id, json.dumps(model_to_dict(inst)), request.user)
+                move_to_deleted_document("Company", id, model_to_dict(inst), request.user)
                 inst.delete()
                 return Response("Successfully deleted", status=status.HTTP_200_OK)
             except Exception as e:
-                return Response("ID {} Not Found".format(id), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response("Error on ID {}: {}".format(id, str(e)), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
        
 
@@ -115,8 +115,8 @@ class ParentCompanyView(APIView):
         for id in ids:
             try:
                 inst = self.model.objects.get(id=id)
-                move_to_deleted_document("Parent Company", id, json.dumps(model_to_dict(inst)), request.user)
+                move_to_deleted_document("Parent Company", id, model_to_dict(inst), request.user)
                 inst.delete()
                 return Response("Successfully deleted", status=status.HTTP_200_OK)
             except Exception as e:
-                return Response("ID {} Not Found".format(id), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response("Error on ID {}: {}".format(id, str(e)), status=status.HTTP_500_INTERNAL_SERVER_ERROR)

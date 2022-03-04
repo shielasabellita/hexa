@@ -19,6 +19,9 @@ class StatusAndRCode(models.Model):
     trans_trigger = models.CharField(max_length=100)
     remarks = models.CharField(max_length=120)
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True)
+
 
 class PriceList(models.Model):
     id = models.CharField(max_length=120, primary_key=True)
@@ -26,6 +29,8 @@ class PriceList(models.Model):
     is_selling = models.IntegerField(choices=GLOBAL_YES_NO, default=0)
     is_transfer = models.IntegerField(choices=GLOBAL_YES_NO, default=0)
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True)
 
 # class ItemGroup(models.Model):
 #     id = models.CharField(max_length=120, primary_key=True)

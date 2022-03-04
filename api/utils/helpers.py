@@ -8,6 +8,8 @@ from django.db.models import query
 from api.models import *
 from api.serializers import *
 
+import datetime, json
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -53,11 +55,15 @@ def move_to_deleted_document(table_name, id_no, object, deleted_by):
     data = {
         "table_name": table_name,
         "id_no": id_no,
-        "object": object,
+        "object": json.dumps(object,  default=converter),
         "deleted_by": deleted_by
     }
     DeletedDocuments.objects.create(**data)
     return True
+
+def converter(obj):
+    if isinstance(obj, (datetime.datetime, datetime.date)):
+        return obj.isoformat()
 
 
 def get_company(company_code):

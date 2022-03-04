@@ -1,10 +1,8 @@
 from django.db import models
-from api.models.accounting import *
-from api.models.stock import *
-from api.models.buying import *
-from api.models.setup_model import *
-from api.models.system_model import *
-from api.models.defaults_model import *
+from api.models.accounting import VatGroup
+from api.models.stock import UOM
+from api.models.setup_model import ChartOfAccounts
+from api.models.defaults_model import PriceList
 
 
 GLOBAL_YES_NO = (
@@ -15,11 +13,17 @@ GLOBAL_YES_NO = (
 
 class ItemGroup(models.Model):
     id = models.CharField(max_length=120, primary_key=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True)
 
 
 
 class FixedAssetGroup(models.Model):
     id = models.CharField(max_length=120, primary_key=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True)
 
 
 
@@ -55,16 +59,7 @@ class Item(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)    
 
-class ItemPrice(models.Model):
-    id = models.CharField(max_length=120, primary_key=True)
-    price = models.FloatField(default=0.00)
 
-    base_uom = models.ForeignKey(UOM, on_delete=models.CASCADE)
-    price_list = models.ForeignKey(PriceList, on_delete=models.CASCADE)
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True, blank=True)
 
 
 ## ITEM CHILD TABLES
