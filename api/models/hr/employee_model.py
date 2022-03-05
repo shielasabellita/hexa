@@ -41,3 +41,7 @@ class Employee(models.Model):
     # FK
     cost_center = models.ForeignKey(CostCenter, on_delete=models.CASCADE, null=True)
     location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True)
+
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True)
