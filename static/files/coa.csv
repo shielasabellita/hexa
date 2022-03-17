@@ -1,0 +1,78 @@
+account_code,account_name,account_type_and_financial_group,normal_balance,report,is_default_expense
+1000,Cash on Hand,Cash,Debit,Balance Sheet,0
+1010,Undeposited Cash,Cash,Debit,Balance Sheet,0
+1020,Cash Fund,Cash,Debit,Balance Sheet,0
+1030,Cash in Bank,Cash,Debit,Balance Sheet,0
+1100,Account Receivable,Receivable,Debit,Balance Sheet,0
+1110,Allowance for Bad Debt,Receivable,Credit,Balance Sheet,0
+1120,Inventory Fulfilled Not Invoiced,Receivable,Debit,Balance Sheet,0
+1300,Inventory,Inventory,Debit,Balance Sheet,0
+1310,Allowance for Obsolesence,Inventory,Credit,Balance Sheet,0
+1400,Other Current Asset,Other Current Asset,Debit,Balance Sheet,0
+1410,Prepaid Expense,Other Current Asset,Debit,Balance Sheet,0
+1500,Motor Vehicle,Fixed Asset,Debit,Balance Sheet,0
+1510,Accumulated Depreciation - Motor Vehicle,Fixed Asset,Credit,Balance Sheet,0
+1520,Office Equipment,Fixed Asset,Debit,Balance Sheet,0
+1530,Accumulated Depreciation - Office Equipment,Fixed Asset,Credit,Balance Sheet,0
+1540,Furniture and Fixture,Fixed Asset,Debit,Balance Sheet,0
+1550,Accumulated Depreciation - Furniture and Fixture,Fixed Asset,Credit,Balance Sheet,0
+1560,Asset Received Not Billed,Fixed Asset,Credit,Balance Sheet,0
+1600,Other Asset,Other Asset,Debit,Balance Sheet,0
+2000,Progress Billing,Payable,Credit,Balance Sheet,0
+2010,Account Payable,Payable,Credit,Balance Sheet,0
+2020,Inventory Received Not Billed,Payable,Credit,Balance Sheet,0
+2100,Accrued Liability,Accrued Liability,Credit,Balance Sheet,0
+2200,SSS/PHIC/HDMF Liability,Taxes and Governmental Liability,Credit,Balance Sheet,0
+2210,Municipal Tax Payable,Taxes and Governmental Liability,Credit,Balance Sheet,0
+2220,Withholding Tax Payable,Taxes and Governmental Liability,Credit,Balance Sheet,0
+2230,Expanded Withholding Tax Payable,Taxes and Governmental Liability,Credit,Balance Sheet,0
+2240,Input Tax,Taxes and Governmental Liability,Debit,Balance Sheet,0
+2250,Output Tax,Taxes and Governmental Liability,Credit,Balance Sheet,0
+2260,Income Tax Payable,Taxes and Governmental Liability,Credit,Balance Sheet,0
+2300,Other Liability,Other Liability,Credit,Balance Sheet,0
+2310,Loan Payable,Other Liability,Credit,Balance Sheet,0
+3000,Retained Earning,Equity,Credit,Balance Sheet,0
+3010,Share Capital,Equity,Credit,Balance Sheet,0
+4000,Revenue,Income,Credit,Profit and Loss,0
+5000,Labor - COS,Cost of Sales,Debit,Profit and Loss,0
+5010,Material - COS,Cost of Sales,Debit,Profit and Loss,0
+5020,Other - COS,Cost of Sales,Debit,Profit and Loss,0
+5030,Overhead - COS,Cost of Sales,Debit,Profit and Loss,0
+5040,Work In Progress,Cost of Sales,Debit,Profit and Loss,0
+4010,Sales,Income,Credit,Profit and Loss,0
+5050,Cost of Sales,Cost of Sales,Debit,Profit and Loss,0
+4020,Other Income,Other Income,Credit,Profit and Loss,0
+5100,Salary and Wage,Operating Expense,Debit,Profit and Loss,1
+5110,Contractual Service,Operating Expense,Debit,Profit and Loss,1
+5120,Bonus,Operating Expense,Debit,Profit and Loss,1
+5130,Employee Benefit and Allowance,Operating Expense,Debit,Profit and Loss,1
+5140,Meal Expense,Operating Expense,Debit,Profit and Loss,1
+5150,Incentive and Commission,Operating Expense,Debit,Profit and Loss,1
+5160,SSS/Med/Pag-ibig Contribution,Operating Expense,Debit,Profit and Loss,1
+5170,Hotel and Lodging,Operating Expense,Debit,Profit and Loss,1
+5180,Training/Meeting Expense,Operating Expense,Debit,Profit and Loss,1
+5190,Transportation Expense,Operating Expense,Debit,Profit and Loss,1
+5200,Depreciation - Motor Vehicle,Operating Expense,Debit,Profit and Loss,0
+5210,Depreciation - Office Equipment,Operating Expense,Debit,Profit and Loss,0
+5220,Depreciation - Furniture and Fixture,Operating Expense,Debit,Profit and Loss,0
+5230,"Fuel, Oil and Lubricant",Operating Expense,Debit,Profit and Loss,1
+5240,Repair and Maintenance,Operating Expense,Debit,Profit and Loss,1
+5250,Rent Expense,Operating Expense,Debit,Profit and Loss,1
+5260,Transportation and Handling Fee,Operating Expense,Debit,Profit and Loss,1
+5270,License and Registration Fee,Operating Expense,Debit,Profit and Loss,1
+5280,Insurance Expense,Operating Expense,Debit,Profit and Loss,1
+5290,Municipal Tax Expense,Operating Expense,Debit,Profit and Loss,1
+5300,Supply Expense,Operating Expense,Debit,Profit and Loss,1
+5310,Telecommunication Expense,Operating Expense,Debit,Profit and Loss,1
+5320,Light and Power,Operating Expense,Debit,Profit and Loss,1
+5330,Water,Operating Expense,Debit,Profit and Loss,1
+5340,Representation Expense,Operating Expense,Debit,Profit and Loss,1
+5350,Professional Fee,Operating Expense,Debit,Profit and Loss,1
+5360,Security Service,Operating Expense,Debit,Profit and Loss,1
+5370,Merchandising and Promotion,Operating Expense,Debit,Profit and Loss,1
+5380,Bad Debt Expense,Operating Expense,Debit,Profit and Loss,0
+5390,Software Expense,Operating Expense,Debit,Profit and Loss,1
+5400,Other Expense,Other Expense,Debit,Profit and Loss,1
+5500,Bank and Other Charge,Finance Charge,Debit,Profit and Loss,1
+5510,Interest Expense,Finance Charge,Debit,Profit and Loss,1
+5600,Income Tax Expense,Income Tax,Debit,Profit and Loss,1
