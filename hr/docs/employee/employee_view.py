@@ -6,19 +6,19 @@ from rest_framework.views import APIView
 from setup.core.doc import Document
 
 # model
-from .discount_group_model import DiscountGroup
+from .employee_model import VatGroup
 
 # serializer
-from .discount_group_serializer import DiscountGroupSerializer
+from .employee_serializer import VatGroupSerializer
 
 # other packages
 import json
 
 
-class DiscountGroupView(Document):
+class VatGroupView(Document):
 
     def __init__(self, *args, **kwargs):
-        args = (DiscountGroup, DiscountGroupSerializer)
+        args = (VatGroup, VatGroupSerializer)
         super().__init__(*args,**kwargs)
 
     # API - GET
@@ -37,10 +37,6 @@ class DiscountGroupView(Document):
     def post(self, request, *args, **kwargs):
         data = request.data 
         try:
-            # total = 0
-            # for i in data:
-            #     i.
-
             data = self.create(data, user=str(request.user))
             return Response(data)
         except Exception as e:

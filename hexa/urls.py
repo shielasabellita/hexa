@@ -24,7 +24,9 @@ urlpatterns = [
     path('login/', login, name='login'),
     path('register/', register, name='register'),
 
-    path('api/method/setup/', include("setup.urls")),
-    path('api/method/account/', include("accounting.urls")),
+    path('api/method/setup/', include("setup.urls")), # setup
+    path('api/method/account/', include("accounting.urls")), # accounting
+    path('api/method/stock/', include("stock.urls")), # stock
+    path('api/method/buying/', include("buying.urls")), # stock
 
 ]

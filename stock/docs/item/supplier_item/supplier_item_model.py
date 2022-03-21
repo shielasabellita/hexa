@@ -1,5 +1,6 @@
 from django.db import models
 from accounting.docs.price_list.price_list_model import PriceList
+from buying.docs.supplier.supplier_model import Supplier
 
 GLOBAL_YES_NO = (
         (1, 1),
@@ -13,7 +14,7 @@ class SupplierItem(models.Model):
     
     #FK
     price_list = models.ForeignKey(PriceList, models.CASCADE, null=True)
-    # supplier = models.ForeignKey(Supplier, models.CASCADE, null=True)
+    supplier = models.ForeignKey(Supplier, models.CASCADE, null=True)
     
     # defaults
     created_by = models.CharField(max_length=120, blank=True)

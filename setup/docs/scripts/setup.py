@@ -33,7 +33,7 @@ class SetupDefaultsView(APIView):
             return Response("Database already used", status=status.HTTP_403_FORBIDDEN)
         else: 
             ## set company series code
-            company_code = set_naming_series('COMP_{4}')
+            company_code = set_naming_series('COMP_{5}')
             data['company'].update({
                 "id": generate_id(),
                 "code": company_code
@@ -42,7 +42,7 @@ class SetupDefaultsView(APIView):
             company_inst.save()
 
             ## set accounting period code
-            acc_period_code = set_naming_series("ACC-PRD_{4}")
+            acc_period_code = set_naming_series("ACC-PRD_{5}")
             data['accounting_period'].update({
                     "id": generate_id(),
                     "code": acc_period_code
@@ -108,7 +108,7 @@ class SetupDefaultsView(APIView):
         for v in vat: 
             v.update({
                 "id": generate_id(),
-                "code": set_naming_series("VAT_{4}")
+                "code": set_naming_series("VAT_{5}")
             })
             VatGroup.objects.create(**v)
 

@@ -2,7 +2,7 @@ from django.db import models
 from stock.docs.uom.uom_model import UOM
 from stock.docs.item_group.item_group_model import ItemGroup
 from stock.docs.fixed_asset_group.fixed_asset_model import FixedAssetGroup
-# from stock.docs.item.item_model import Item
+from stock.docs.item.item_model import Item
 from stock.docs.item.item_price.item_price_model import ItemPrice
 from stock.docs.item.supplier_item.supplier_item_model import SupplierItem
 from stock.docs.item.uom_conversion_detail.uom_conversion_detail_model import UOMConversionDetail
@@ -13,7 +13,7 @@ from stock.docs.item.uom_conversion_detail.uom_conversion_detail_model import UO
 UOM()
 
 # item
-# Item()
+Item()
 
 # item group
 ItemGroup()
@@ -21,11 +21,11 @@ ItemGroup()
 # fixed asset group
 FixedAssetGroup()
 
-# item price
+# item -> item price
 ItemPrice()
 
-# supplier item
+# item -> supplier item
 SupplierItem()
 
-# uom conversion detail
+# item -> uom conversion detail
 UOMConversionDetail()

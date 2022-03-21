@@ -6,6 +6,7 @@ from accounting.docs.reason_codes.reason_codes_model import StatusAndRCode
 from accounting.docs.supplier_group.supplier_group_model import SupplierGroup
 from accounting.docs.vat_group.vat_group_model import VatGroup
 from accounting.docs.withholding_tax_group.withholding_tax_model import WithHoldingTaxGroup
+from accounting.docs.discount_group.discount_group_model import DiscountGroup
 
 
 ## docs/chart_of_accounts
@@ -28,3 +29,7 @@ VatGroup()
 
 ## docs/withholding_tax
 WithHoldingTaxGroup()
+
+
+## docs/discount group
+DiscountGroup()
