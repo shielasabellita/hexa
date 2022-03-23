@@ -100,14 +100,16 @@ class SupplierView(Document):
             for d in dt:
                 for i in fields:
                     inst = models_serializer[i][0].objects.get(id=d[i])
+                    serializer = models_serializer[i][1](inst).data
                     d.update({
-                        i: models_serializer[i][1](inst).data
+                        i: serializer
                     })
         else:
             for i in fields:
                 inst = models_serializer[i][0].objects.get(id=dt[i])
+                serializer = models_serializer[i][1](inst).data
                 dt.update({
-                    i: models_serializer[i][1](inst).data
+                    i: serializer
                 })
 
         return dt
