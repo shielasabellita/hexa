@@ -122,7 +122,7 @@ class SetupDefaultsView(APIView):
                 "code": set_naming_series("ITM-GRP_{5}"),
                 "item_group_name": ig
             }
-            ItemGroup.objects.create(id=itm)
+            ItemGroup.objects.create(**itm)
 
 
     
