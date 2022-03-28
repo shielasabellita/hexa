@@ -14,8 +14,8 @@ from django.forms.models import model_to_dict
 
 
 class Document(APIView):
-    # authentication_classes = (CustomAuthentication, )
-    # permission_classes = [IsAuthenticated]
+    authentication_classes = (CustomAuthentication, )
+    permission_classes = [IsAuthenticated]
 
     serializer_class = ""
     model = ""
