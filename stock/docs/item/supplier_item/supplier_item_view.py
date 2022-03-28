@@ -6,19 +6,19 @@ from rest_framework.views import APIView
 from setup.core.doc import Document
 
 # model
-from .vat_group_model import VatGroup
+from .supplier_item_model import SupplierItem
 
 # serializer
-from .vat_group_serializer import VatGroupSerializer
+from .supplier_item_serializer import SupplierItemSerializer
 
 # other packages
 import json
 
 
-class VatGroupView(Document):
+class SupplierItemView(Document):
 
     def __init__(self, *args, **kwargs):
-        args = (VatGroup, VatGroupSerializer)
+        args = (SupplierItem, SupplierItemSerializer)
         super().__init__(*args,**kwargs)
 
     # API - GET

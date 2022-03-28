@@ -16,7 +16,7 @@ class ItemPrice(models.Model):
     
     #FK
     base_uom = models.ForeignKey(UOM, models.CASCADE, null=True)
-    price_list = models.ForeignKey(PriceList, models.CASCADE, null=True)
+    price_list = models.ForeignKey(PriceList, models.CASCADE)
     item = models.ForeignKey(Item, models.CASCADE, null=True)
     supplier = models.ForeignKey(Supplier, models.CASCADE, null=True)
     
