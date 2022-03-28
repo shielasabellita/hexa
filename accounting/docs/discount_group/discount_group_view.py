@@ -37,10 +37,10 @@ class DiscountGroupView(Document):
     def post(self, request, *args, **kwargs):
         data = request.data 
         try:
-            # total = 0
-            # for i in data:
-            #     i.
-
+            total = sum([data.get('discount1'), data.get('discount2'), data.get('discount3')])
+            data.update({
+                "total_discount": total
+            })
             data = self.create(data, user=str(request.user))
             return Response(data)
         except Exception as e:

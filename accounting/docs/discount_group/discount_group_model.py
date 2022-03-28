@@ -7,7 +7,7 @@ GLOBAL_YES_NO = (
     )
 
 
-class DiscountGroup(models.Model):
+class  DiscountGroup(models.Model):
     id = models.CharField(max_length=120, primary_key=True)
     code = models.CharField(max_length=120, blank=True)   ## system generated
     discount_name = models.CharField(max_length=120)
