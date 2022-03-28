@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from .vat_group_model import VatGroup
+from .uom_conversion_detail_model import UOMConversionDetail
 
-class VatGroupSerializer(serializers.ModelSerializer):
+class UOMConversionDetailSerializer(serializers.ModelSerializer):
     class Meta:
-        model = VatGroup
+        model = UOMConversionDetail
         fields = "__all__"

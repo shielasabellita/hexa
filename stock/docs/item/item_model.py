@@ -21,7 +21,7 @@ class Item(models.Model):
     maintain_stock = models.IntegerField(choices=GLOBAL_YES_NO, default=1)
     serial_no = models.CharField(max_length=120, blank=True)
     batch_no = models.CharField(max_length=120, blank=True)
-    expiry = models.DateField(blank=True)
+    expiry = models.DateField(null=True)
 
     is_purchase_item = models.IntegerField(choices=GLOBAL_YES_NO, default=1)
     # fk

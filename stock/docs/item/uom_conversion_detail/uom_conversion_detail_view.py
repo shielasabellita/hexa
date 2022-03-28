@@ -6,19 +6,19 @@ from rest_framework.views import APIView
 from setup.core.doc import Document
 
 # model
-from .vat_group_model import VatGroup
+from .uom_conversion_detail_model import UOMConversionDetail
 
 # serializer
-from .vat_group_serializer import VatGroupSerializer
+from .uom_conversion_detail_serializer import UOMConversionDetailSerializer
 
 # other packages
 import json
 
 
-class VatGroupView(Document):
+class UOMConversionDetailView(Document):
 
     def __init__(self, *args, **kwargs):
-        args = (VatGroup, VatGroupSerializer)
+        args = (UOMConversionDetail, UOMConversionDetailSerializer)
         super().__init__(*args,**kwargs)
 
     # API - GET
