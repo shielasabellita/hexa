@@ -37,8 +37,11 @@ class UOMConversionDetailView(Document):
     def post(self, request, *args, **kwargs):
         data = request.data 
         try:
-            data = self.create(data, user=str(request.user))
-            return Response(data)
+            if not self.validate_duplicate_uom(data.get("item"), data.get("uom")):
+                data = self.create(data, user=str(request.user))
+                return Response(data)
+            else:
+                raise Exception("UOM Conversion Detail already exist")
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -46,8 +49,11 @@ class UOMConversionDetailView(Document):
     def put(self, request, *args, **kwargs):
         data = request.data 
         try:
-            data = self.update(id=data.get("id"), data=data, user=str(request.user))
-            return Response(data)
+            if not self.validate_duplicate_uom(data.get("item"), data.get("uom")):
+                data = self.update(id=data.get("id"), data=data, user=str(request.user))
+                return Response(data)
+            else:
+                raise Exception("UOM Conversion Detail already exist")
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -64,4 +70,12 @@ class UOMConversionDetailView(Document):
 
 
 
-       
+    def validate_duplicate_uom(self, item, uom):
+        filters= {
+            "item": item, 
+            "uom": uom,
+        }
+        if len(self.get_list(filters=filters)) > 0:
+            return True
+        else:
+            return False

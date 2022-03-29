@@ -50,8 +50,11 @@ class ItemPriceView(Document):
     def put(self, request, *args, **kwargs):
         data = request.data 
         try:
-            data = self.update(id=data.get("id"), data=data, user=str(request.user))
-            return Response(data)
+            if not self.validate_duplicate_price(data.get('item'), data.get('supplier'), data.get("base_uom"), data.get('price_list')):
+                data = self.update(id=data.get('id'), data=data, user=str(request.user))
+                return Response(data)
+            else:
+                raise Exception("Item Price already exist")
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
