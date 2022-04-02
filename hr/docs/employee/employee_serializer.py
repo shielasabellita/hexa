@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from .employee_model import VatGroup
+from .employee_model import Employee
 
-class VatGroupSerializer(serializers.ModelSerializer):
+class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = VatGroup
+        model = Employee
         fields = "__all__"

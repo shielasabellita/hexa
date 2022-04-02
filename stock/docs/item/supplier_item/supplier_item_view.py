@@ -41,7 +41,7 @@ class SupplierItemView(Document):
                 data = self.create(data, user=str(request.user))
                 return Response(data)
             else:
-                raise Exception("Item Price already exist")
+                raise Exception("Item supplier already exist")
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -53,7 +53,7 @@ class SupplierItemView(Document):
                 data = self.update(id=data.get('id'), data=data, user=str(request.user))
                 return Response(data)
             else:
-                raise Exception("Item Price already exist")
+                raise Exception("Item supplier already exist")
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

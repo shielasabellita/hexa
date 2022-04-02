@@ -1,3 +1,4 @@
+import fractions
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -6,20 +7,21 @@ from rest_framework.views import APIView
 from setup.core.doc import Document
 
 # model
-from .employee_model import VatGroup
+from .employee_model import Employee
 
 # serializer
-from .employee_serializer import VatGroupSerializer
+from .employee_serializer import EmployeeSerializer
 
 # other packages
 import json
 
 
-class VatGroupView(Document):
+class EmployeeView(Document):
 
     def __init__(self, *args, **kwargs):
-        args = (VatGroup, VatGroupSerializer)
+        args = (Employee, EmployeeSerializer)
         super().__init__(*args,**kwargs)
+
 
     # API - GET
     def get(self, request, *args, **kwargs):
@@ -33,14 +35,20 @@ class VatGroupView(Document):
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
     # API - POST
     def post(self, request, *args, **kwargs):
-        data = request.data 
+        data = request.data
         try:
+            employment_type = ["Direct Hire", "Agency", "Job Order", "On Call"]
+            if not data.get("employment_type") in employment_type:
+                raise Exception("Employment Type must be in Direct Hire, Agency, Job Order, On Call")
+
             data = self.create(data, user=str(request.user))
             return Response(data)
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
     # API - PUT
     def put(self, request, *args, **kwargs):
@@ -50,6 +58,7 @@ class VatGroupView(Document):
             return Response(data)
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
     # API - DELETE
     def delete(self, request, *args, **kwargs):
