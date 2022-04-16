@@ -5,11 +5,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from setup.models import Company, AccountingPeriod
-from accounting.models import ChartOfAccounts, CostCenter, PriceList, StatusAndRCode, SupplierGroup, VatGroup, WithHoldingTaxGroup
+from accounting.models import ChartOfAccounts, CostCenter, PriceList, SupplierGroup, VatGroup, WithHoldingTaxGroup
 from stock.docs.uom.uom_model import UOM
 from stock.docs.item_group.item_group_model import ItemGroup
 from stock.docs.fixed_asset_group.fixed_asset_model import FixedAssetGroup
 from setup.docs.company.company_serializer import CompanySerializer
+from setup.docs.reason_codes.reason_codes_model import StatusAndRCode
 
 
 from setup.core.doc import Document

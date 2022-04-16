@@ -5,6 +5,7 @@ from setup.docs.accounting_period.accounting_period_model import AccountingPerio
 from setup.docs.branch.branch_model import Branch
 from setup.docs.location.location_model import Location
 from setup.docs.parent_company.parent_company_model import ParentCompany
+from setup.docs.reason_codes.reason_codes_model import StatusAndRCode
 
 
 ### utils/naming_model
@@ -24,3 +25,5 @@ Location()
 
 ### PARENT COMPANY
 ParentCompany()
+
+StatusAndRCode()
