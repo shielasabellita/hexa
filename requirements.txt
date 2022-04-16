@@ -6,3 +6,4 @@ django-filter==21.1
 pandas
 pymysql
 pyjwt
+django-cors-headers
