@@ -35,6 +35,7 @@ class Employee(models.Model):
     date_of_joining = models.DateField(blank=True, null=True)
     date_of_separation = models.DateField(blank=True, null=True)
     is_active = models.IntegerField(choices=GLOBAL_YES_NO, default=1)
+    designation = models.CharField(max_length=120, blank=True)
     emergency_contact_name = models.CharField(max_length=120, blank=True)
     emergency_contact_no = models.CharField(max_length=120, blank=True)
     relation = models.CharField(max_length=120, blank=True)

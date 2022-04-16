@@ -3,19 +3,19 @@ from rest_framework.response import Response
 from setup.core.doc import Document
 
 # model
-from .supplier_group_model import SupplierGroup
+from .reason_codes_model import StatusAndRCode
 
 # serializer
-from .supplier_group_serializer import SupplierGroupSerializer
+from .reason_codes_serializer import StatusAndRCodeSerializer
 
 # other packages
 import json
 
 
-class SupplierGroupView(Document):
+class StatusAndRCodeView(Document):
 
     def __init__(self, *args, **kwargs):
-        args = (SupplierGroup, SupplierGroupSerializer)
+        args = (StatusAndRCode, StatusAndRCodeSerializer)
         super().__init__(*args,**kwargs)
 
     # API - GET

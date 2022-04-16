@@ -4,4 +4,5 @@ djangorestframework==3.12.4
 markdown==3.3.6
 django-filter==21.1
 pandas
-
+pymysql
+pyjwt

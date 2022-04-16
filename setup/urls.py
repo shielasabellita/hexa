@@ -5,6 +5,7 @@ from .docs.accounting_period.accounting_period_view import AccountingPeriodView
 from .docs.branch.branch_view import BranchView
 from .docs.location.location_view import LocationView
 from .docs.scripts.setup import SetupDefaultsView
+from .docs.reason_codes.reason_codes_view import StatusAndRCodeView
 
 
 urlpatterns = [
@@ -14,6 +15,7 @@ urlpatterns = [
     path("docs/acc_period", AccountingPeriodView.as_view(), name='acc_period'),
     path("docs/branch", BranchView.as_view(), name='branch'),
     path("docs/location", LocationView.as_view(), name='location'),
+    path("docs/reason_code", StatusAndRCodeView.as_view(), name='reason_codes'),
 
 
     # setup
