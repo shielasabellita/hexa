@@ -30,7 +30,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = str(os.getenv('SECRET_KEY'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.getenv('SECRET_KEY'))
+DEBUG = True
+if os.getenv('DEBUG') == 'False':
+    DEBUG = False
+
 
 ALLOWED_HOSTS = ['127.0.0.1']
 ALLOWED_HOSTS.append(str(os.getenv('HOST')))
@@ -157,6 +160,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
 if DEBUG == True:
     STATICFILES_DIRS = [
         os.path.join(BASE_DIR, 'static')
