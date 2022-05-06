@@ -6,10 +6,14 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate
+from setup.docs.company.company_model import Company
+from setup.docs.company.company_serializer import CompanySerializer
+from setup.docs.company.company_view import CompanyView
 from setup.docs.user.user_serializer import UserSerializer
 from hashlib import blake2b
 from hmac import compare_digest
 from setup.docs.user.auth import _set_token
+from setup.core.doc import Document
 
 
 
@@ -30,13 +34,21 @@ def login(request):
 
             request_data = set_user_return(user)
             request_data.update({
-                "token": jwt_token
+                "token": jwt_token,
+                "company_details": get_company()
             })
 
             return Response(request_data)
         else:
             return Response('Invalid credentials', status.HTTP_401_UNAUTHORIZED)
 
+def get_company():
+    try:
+        company = Company.objects.all()
+        return CompanySerializer(company, many=True).data
+
+    except Exception as e:
+        return None
 
 
 @api_view(['POST'])
