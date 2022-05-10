@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "stock",
     "buying",
     "hr",
+    "selling",
 
 
     'django.contrib.admin',

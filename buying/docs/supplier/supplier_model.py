@@ -1,4 +1,3 @@
-from pyexpat import model
 from django.db import models
 from accounting.docs.supplier_group.supplier_group_model import SupplierGroup
 from accounting.docs.cost_center.cost_center_model import CostCenter
