@@ -1,3 +1,4 @@
+import imp
 from django.urls import path, include
 from .docs.parent_company.parent_company_view import ParentCompanyView
 from .docs.company.company_view import CompanyView
@@ -7,6 +8,7 @@ from .docs.location.location_view import LocationView
 from .docs.scripts.setup import SetupDefaultsView
 from .docs.reason_codes.reason_codes_view import StatusAndRCodeView
 
+from .docs.scripts.delete_all_data import wipe_all_data
 
 urlpatterns = [
     # MD
@@ -20,6 +22,7 @@ urlpatterns = [
 
     # setup
     path("", SetupDefaultsView.as_view(), name='setup'),
+    path("wipe_all_data", wipe_all_data, name='delete'),
 
 
 ]

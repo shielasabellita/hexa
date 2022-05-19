@@ -29,5 +29,6 @@ urlpatterns = [
     path('api/method/stock/', include("stock.urls")), # stock
     path('api/method/buying/', include("buying.urls")), # buying
     path('api/method/hr/', include("hr.urls")), # HR
+    path('api/method/selling/', include("selling.urls")), # selling
 
 ]
