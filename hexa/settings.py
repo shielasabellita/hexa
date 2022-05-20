@@ -35,7 +35,7 @@ if os.getenv('ISDEBUG') == 'False':
     DEBUG = False
 
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 ALLOWED_HOSTS.append(str(os.getenv('HOST')))
 
 
@@ -188,7 +188,7 @@ REST_FRAMEWORK = {
 }
 
 if str(os.getenv('ISCORSTEMP')) == '1':
-    CORS_ALLOWED_ORIGINS = ['*']
+#    CORS_ALLOWED_ORIGINS = ['*']
     CORS_ORIGIN_ALLOW_ALL = True
 else:
     CORS_ALLOWED_ORIGINS = []
