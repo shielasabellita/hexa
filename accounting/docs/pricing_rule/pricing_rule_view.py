@@ -2,17 +2,16 @@ from rest_framework import status
 from rest_framework.response import Response
 from setup.core.doc import Document
 
-# serializer
-from .discount_group_serializer import DiscountGroupSerializer, DiscountGroup
+from .pricing_rule_serializer import PricingRule, PricingRuleSerializer
+from .pricing_rule_apply_to.apply_to_item_supplier_serializer import ApplyTo, ApplyToSerializer
 
-# other packages
+
 import json
 
-
-class DiscountGroupView(Document):
+class PricingRuleView(Document):
 
     def __init__(self, *args, **kwargs):
-        args = (DiscountGroup, DiscountGroupSerializer)
+        args = (PricingRule, PricingRuleSerializer)
         super().__init__(*args,**kwargs)
 
     # API - GET
@@ -59,5 +58,3 @@ class DiscountGroupView(Document):
                 return Response("Error on ID {}: {}".format(id, str(e)), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         return Response("Successfully deleted", status=status.HTTP_200_OK)
-
-

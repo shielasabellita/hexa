@@ -2,17 +2,16 @@ from rest_framework import status
 from rest_framework.response import Response
 from setup.core.doc import Document
 
-# serializer
-from .discount_group_serializer import DiscountGroupSerializer, DiscountGroup
+# model
+from .apply_to_item_supplier_serializer import ApplyTo, ApplyToSerializer
 
 # other packages
 import json
 
-
-class DiscountGroupView(Document):
+class ApplyToView(Document):
 
     def __init__(self, *args, **kwargs):
-        args = (DiscountGroup, DiscountGroupSerializer)
+        args = (ApplyTo, ApplyToSerializer)
         super().__init__(*args,**kwargs)
 
     # API - GET
@@ -31,10 +30,6 @@ class DiscountGroupView(Document):
     def post(self, request, *args, **kwargs):
         data = request.data 
         try:
-            total = sum([data.get('discount1'), data.get('discount2'), data.get('discount3')])
-            data.update({
-                "total_discount": total
-            })
             data = self.create(data, user=str(request.user))
             return Response(data)
         except Exception as e:
@@ -61,3 +56,4 @@ class DiscountGroupView(Document):
         return Response("Successfully deleted", status=status.HTTP_200_OK)
 
 
+    
