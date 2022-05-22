@@ -26,6 +26,20 @@ import json
 
 
 class SupplierView(Document):
+    fk_fields = [
+            "supplier_group", "cost_center", "vat_group", "wht", 
+            "default_pricelist", "default_expense_account", "default_payable_account"
+            ]
+
+    fk_models_serializer = {
+            "supplier_group": [SupplierGroup, SupplierGroupSerializer],
+            "cost_center": [CostCenter, CostCenterSerializer],
+            "vat_group": [VatGroup, VatGroupSerializer],
+            "wht": [WithHoldingTaxGroup, WithHoldingTaxGroupSerializer],
+            "default_pricelist": [PriceList, PriceListSerializer],
+            "default_expense_account": [ChartOfAccounts, ChartOfAccountsSerializer],
+            "default_payable_account": [ChartOfAccounts, ChartOfAccountsSerializer]
+        }
 
     def __init__(self, *args, **kwargs):
         args = (Supplier, SupplierSerializer)
@@ -35,10 +49,10 @@ class SupplierView(Document):
     def get(self, request, *args, **kwargs):
         try:
             if request.GET.get('filters', None):
-                data = self.get_list(filters=json.loads(request.GET.get('filters', None)))
+                data = self.get_list(filters=json.loads(request.GET.get('filters', None)), fk_fields=self.fk_fields, models_serializer=self.fk_models_serializer)
             else:
                 id = request.GET.get('id', None)
-                data = self.get_list(id)
+                data = self.get_list(id, fk_fields=self.fk_fields, models_serializer=self.fk_models_serializer)
 
             data = self.get_link_data(data)
 
@@ -75,38 +89,3 @@ class SupplierView(Document):
         
         return Response("Successfully deleted", status=status.HTTP_200_OK)
 
-
-
-    def get_link_data(self, data):
-        dt = json.loads(json.dumps(data))
-        models_serializer = {
-            "supplier_group": [SupplierGroup, SupplierGroupSerializer],
-            "cost_center": [CostCenter, CostCenterSerializer],
-            "vat_group": [VatGroup, VatGroupSerializer],
-            "wht": [WithHoldingTaxGroup, WithHoldingTaxGroupSerializer],
-            "default_pricelist": [PriceList, PriceListSerializer],
-            "default_expense_account": [ChartOfAccounts, ChartOfAccountsSerializer],
-            "default_payable_account": [ChartOfAccounts, ChartOfAccountsSerializer]
-        }
-
-        fields = [
-            "supplier_group", "cost_center", "vat_group", "wht", 
-            "default_pricelist", "default_expense_account", "default_payable_account"
-            ]
-        if isinstance(dt, list):
-            for d in dt:
-                for i in fields:
-                    inst = models_serializer[i][0].objects.get(id=d[i])
-                    serializer = models_serializer[i][1](inst).data
-                    d.update({
-                        i: serializer
-                    })
-        else:
-            for i in fields:
-                inst = models_serializer[i][0].objects.get(id=dt[i])
-                serializer = models_serializer[i][1](inst).data
-                dt.update({
-                    i: serializer
-                })
-
-        return dt

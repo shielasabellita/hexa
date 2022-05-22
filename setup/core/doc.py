@@ -26,7 +26,7 @@ class Document(APIView):
             self.serializer_class = args[1]
 
 
-    def get_list(self, id=None, filters=None):
+    def get_list(self, id=None, filters=None, fk_fields=None, models_serializer=None):
         """
             no id if get_all , set filters if get by filters
         """
@@ -42,7 +42,31 @@ class Document(APIView):
             serializer = self.serializer_class(inst, many=True)
         
         data = serializer.data
+        if fk_fields and models_serializer:
+            data = self.get_linked_data(serializer.data, fk_fields, models_serializer)
         return data
+    
+    def get_linked_data(self, data=None, fk_fields=None, models_serializer=None):
+        dt = data
+        if isinstance(dt, list):
+            for d in dt:
+                for i in fk_fields:
+                    if d[i]:
+                        inst = models_serializer[i][0].objects.get(id=d[i])
+                        serializer = models_serializer[i][1](inst).data
+                        d.update({
+                            i: serializer
+                        })
+        else:
+            for i in fk_fields:
+                inst = models_serializer[i][0].objects.get(id=dt[i])
+                serializer = models_serializer[i][1](inst).data
+                dt.update({
+                    i: serializer
+                })
+
+        return dt
+
 
     
     def sql(self, query):
