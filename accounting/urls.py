@@ -1,6 +1,8 @@
 from math import frexp
 from django.urls import path, include
+from accounting.docs.pricing_rule.pricing_rule_apply_to.apply_to_item_supplier_view import ApplyToView
 
+from accounting.docs.pricing_rule.pricing_rule_view import PricingRuleView
 from .docs.chart_of_accounts.chart_of_accounts_view import ChartOfAccountsView
 from .docs.cost_center.cost_center_view import CostCenterView
 from .docs.price_list.price_list_view import PriceListView
@@ -22,4 +24,6 @@ urlpatterns = [
     path("docs/wth_group", WithHoldingTaxGroupView.as_view(), name='wth_group'),
     path("docs/discount_group", DiscountGroupView.as_view(), name='discount_group'),
     path("docs/supplier_group", SupplierGroupView.as_view(), name='supplier_group'),
+    path("docs/pricing_rule", PricingRuleView.as_view(), name='pricing_rule'),
+    path("docs/apply_to", ApplyToView.as_view(), name='apply_to'),
 ]
