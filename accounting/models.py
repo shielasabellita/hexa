@@ -6,7 +6,8 @@ from accounting.docs.supplier_group.supplier_group_model import SupplierGroup
 from accounting.docs.vat_group.vat_group_model import VatGroup
 from accounting.docs.withholding_tax_group.withholding_tax_model import WithHoldingTaxGroup
 from accounting.docs.discount_group.discount_group_model import DiscountGroup
-
+from accounting.docs.pricing_rule.pricing_rule_model import PricingRule
+from accounting.docs.pricing_rule.pricing_rule_apply_to.apply_to_item_supplier_model import ApplyTo
 
 ## docs/chart_of_accounts
 ChartOfAccounts()
@@ -27,6 +28,9 @@ VatGroup()
 ## docs/withholding_tax
 WithHoldingTaxGroup()
 
-
 ## docs/discount group
 DiscountGroup()
+
+PricingRule()
+
+ApplyTo()
