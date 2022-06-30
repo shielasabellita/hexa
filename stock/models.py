@@ -6,6 +6,7 @@ from stock.docs.item.item_model import Item
 from stock.docs.item.item_price.item_price_model import ItemPrice
 from stock.docs.item.supplier_item.supplier_item_model import SupplierItem
 from stock.docs.item.uom_conversion_detail.uom_conversion_detail_model import UOMConversionDetail
+from stock.docs.categorization.categorization_model import *
 
 
 
@@ -29,3 +30,11 @@ SupplierItem()
 
 # item -> uom conversion detail
 UOMConversionDetail()
+
+ItemCatBrand()
+ItemCatDepartment()
+ItemCategory()
+ItemCatForm()
+ItemCatManufacturer()
+ItemCatSection()
+ItemCatSize()

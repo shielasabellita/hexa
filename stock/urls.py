@@ -6,6 +6,7 @@ from .docs.item.item_view import ItemView
 from .docs.item.item_price.item_price_view import ItemPriceView
 from .docs.item.uom_conversion_detail.uom_conversion_detail_view import UOMConversionDetailView
 from .docs.item.supplier_item.supplier_item_view import SupplierItemView
+from .docs.categorization.categorization_view import CategorizationView
 
 
 urlpatterns = [
@@ -17,4 +18,6 @@ urlpatterns = [
     path("docs/item/item_price", ItemPriceView.as_view(), name='item_price'),
     path("docs/item/item_supplier", SupplierItemView.as_view(), name='item_supplier'),
     path("docs/item/uom_conversion_detail", UOMConversionDetailView.as_view(), name='uom_conversion_detail'),
+    path('docs/category_management/<category>', CategorizationView.as_view(), name='category_management'),
+
 ]
