@@ -11,9 +11,7 @@ class  DiscountGroup(models.Model):
     id = models.CharField(max_length=120, primary_key=True)
     code = models.CharField(max_length=120, blank=True)   ## system generated
     discount_name = models.CharField(max_length=120)
-    discount1 = models.FloatField()
-    discount2 = models.FloatField()
-    discount3 = models.FloatField()
+    discounts = models.CharField(max_length=120)
     total_discount = models.FloatField()
 
 

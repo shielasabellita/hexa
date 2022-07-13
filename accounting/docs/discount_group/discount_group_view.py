@@ -31,7 +31,9 @@ class DiscountGroupView(Document):
     def post(self, request, *args, **kwargs):
         data = request.data 
         try:
-            total = sum([data.get('discount1'), data.get('discount2'), data.get('discount3')])
+            # total = sum([data.get('discount1'), data.get('discount2'), data.get('discount3')])
+            discounts = json.loads(data.get("discounts"))
+            total = sum(discounts)
             data.update({
                 "total_discount": total
             })
