@@ -39,10 +39,11 @@ class ItemPriceView(Document):
         data = request.data 
         try:
             if not self.validate_duplicate_price(data.get('item'), data.get('supplier'), data.get("base_uom"), data.get('price_list')):
+                print(data)
                 data = self.create(data, user=str(request.user))
                 return Response(data)
             else:
-                raise Exception("Item Price already exist")
+                raise Exception("Cannot add multiple prices with the same uom")
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -54,7 +55,7 @@ class ItemPriceView(Document):
                 data = self.update(id=data.get('id'), data=data, user=str(request.user))
                 return Response(data)
             else:
-                raise Exception("Item Price already exist")
+                raise Exception("Cannot add multiple prices with the same uom")
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

@@ -31,4 +31,6 @@ urlpatterns = [
     path('api/method/hr/', include("hr.urls")), # HR
     path('api/method/selling/', include("selling.urls")), # selling
 
+    path('api/method/controller/', include("controller.urls")), # controllers
+
 ]

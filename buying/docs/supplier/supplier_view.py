@@ -54,8 +54,6 @@ class SupplierView(Document):
                 id = request.GET.get('id', None)
                 data = self.get_list(id, fk_fields=self.fk_fields, models_serializer=self.fk_models_serializer)
 
-            data = self.get_link_data(data)
-
             return Response(data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)

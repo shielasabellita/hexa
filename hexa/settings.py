@@ -38,6 +38,8 @@ if os.getenv('ISDEBUG') == 'False':
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 ALLOWED_HOSTS.append(str(os.getenv('HOST')))
 
+APPEND_SLASH = False
+
 
 # Application definition
 

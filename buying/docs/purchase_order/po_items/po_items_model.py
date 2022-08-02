@@ -1,7 +1,7 @@
 from django.db import models
 from accounting.docs.pricing_rule.pricing_rule_model import PricingRule
 
-from purchase_order.purchase_order_serializer import PurchaseOrder, PurchaseOrderSerializer
+from buying.docs.purchase_order.purchase_order_model import PurchaseOrder
 from stock.models import *
 from accounting.models import VatGroup
 

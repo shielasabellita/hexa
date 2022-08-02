@@ -49,7 +49,9 @@ class Document(APIView):
     def get_linked_data(self, data=None, fk_fields=None, models_serializer=None):
         dt = data
         if isinstance(dt, list):
+            # print("is instance")
             for d in dt:
+                print(d)
                 for i in fk_fields:
                     if d[i]:
                         inst = models_serializer[i][0].objects.get(id=d[i])
