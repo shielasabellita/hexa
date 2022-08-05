@@ -17,6 +17,8 @@ import json
 
 
 class ItemPriceView(Document):
+    model = ItemPrice
+    serializer = ItemPriceSerializer
 
     def __init__(self, *args, **kwargs):
         args = (ItemPrice, ItemPriceSerializer)
@@ -39,7 +41,13 @@ class ItemPriceView(Document):
         data = request.data 
         try:
             if not self.validate_duplicate_price(data.get('item'), data.get('supplier'), data.get("base_uom"), data.get('price_list')):
-                print(data)
+
+                if not data.get("code"):
+                    code = self.model._meta.get_field("code").default
+                    data.update({
+                        "code": code
+                    })
+
                 data = self.create(data, user=str(request.user))
                 return Response(data)
             else:

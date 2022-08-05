@@ -12,7 +12,7 @@ GLOBAL_YES_NO = (
 
 class ItemPrice(models.Model):
     id = models.CharField(max_length=120, primary_key=True)
-    code = models.CharField(max_length=120, blank=True)   ## system generated
+    code = models.CharField(max_length=120, default="ITM-PRC_{9}")   ## system generated
     rate = models.DecimalField(decimal_places=4, max_digits=10)
     #FK
     base_uom = models.ForeignKey(UOM, models.CASCADE, null=True)

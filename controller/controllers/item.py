@@ -13,12 +13,12 @@ def get_item_rate(request):
     """
         args: {
             "price_list": "df94b235c7ce44d7a7ef0737c6762338",
-            "item": "fddefa5e0cfa4b5fa59ba865df9dfa74",
+            "item": "f7ddfbcc117843639aff3c29c827a2d3",
             "uom": "824b1874e1cd4ff98a98a9c3419404d3", 
             "supplier": "5d3d88f63dfd44d9818225fc66006ebc",
-            "rate": 1 // not required
+            "rate": 10, // rate can be get from item price master
+            "qty": 3
         }
-
     """
     data = request.data
 
@@ -26,7 +26,6 @@ def get_item_rate(request):
     item_doc = Item.objects.get(id=data['item'])
     vat_percentage = get_percent(int(item_doc.vat_group.rate))
 
-    rate = 0
     try:
         item_price = ItemPrice.objects.get(item=item_doc, price_list=pl_doc)
     except:
@@ -38,13 +37,25 @@ def get_item_rate(request):
     else:
         vat = 1 + vat_percentage
 
-    rate = (item_price.rate if item_price else data.get("rate")) * vat
-    
+
+    rate = 0 if not (item_price.rate if item_price else data.get("rate")) else (item_price.rate if item_price else data.get("rate"))
+    amount = get_item_amount(rate, data.get("qty"))
+
     res = {
         "vat_rate": item_doc.vat_group.rate,
-        "item": item_doc.id,
-        "rate": flt(rate, 2)
+        "vat_group": item_doc.vat_group.vat_group_name,
+        "item_id": item_doc.id,
+        "code": item_doc.code,
+        "item_name": item_doc.item_name,
+        "item_shortname": item_doc.item_shortname,
+        "rate": rate,
+        "gross_rate": flt(rate/vat, 2),
+        "amount": amount,
+        "qty": data.get("qty"),
+        "uom_id": item_doc.base_uom.id,
+        "uom": item_doc.base_uom.uom,
     }
+    
     return Response(res)
 
 
@@ -52,3 +63,7 @@ def get_item_amount(rate, qty):
     return rate * qty
 
 
+def generate_item_price_if_zero(item, rate, uom, price_list, supplier):
+    ItemPrice.objects.create(**{
+        "item": item,
+    })
