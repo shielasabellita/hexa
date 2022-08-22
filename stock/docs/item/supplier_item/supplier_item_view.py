@@ -16,6 +16,8 @@ import json
 
 
 class SupplierItemView(Document):
+    model = SupplierItem
+    serializer = SupplierItemSerializer
 
     def __init__(self, *args, **kwargs):
         args = (SupplierItem, SupplierItemSerializer)
@@ -38,6 +40,11 @@ class SupplierItemView(Document):
         data = request.data 
         try:
             if not self.validate_duplicate_supplier(data.get('item'), data.get('supplier'), data.get('price_list')):
+                if not data.get("code"):
+                    code = self.model._meta.get_field("code").default
+                    data.update({
+                        "code": code
+                    })
                 data = self.create(data, user=str(request.user))
                 return Response(data)
             else:

@@ -14,7 +14,7 @@ GLOBAL_YES_NO = (
 
 class Supplier(models.Model):
     id = models.CharField(max_length=120, primary_key=True)
-    code = models.CharField(max_length=120, blank=True)   ## system generated
+    code = models.CharField(max_length=120, default="SUP_{9}")   ## system generated
     
     sup_name = models.CharField(max_length=120)
     sup_shortname = models.CharField(max_length=120, blank=True)

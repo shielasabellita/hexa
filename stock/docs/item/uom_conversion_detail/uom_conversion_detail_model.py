@@ -10,7 +10,7 @@ GLOBAL_YES_NO = (
 
 class UOMConversionDetail(models.Model):
     id = models.CharField(max_length=120, primary_key=True)
-    code = models.CharField(max_length=120, blank=True)   ## system generated
+    code = models.CharField(max_length=120, default="UOM-CONV_{9}")   ## system generated
     conversion_factor = models.FloatField()
     #FK
     uom = models.ForeignKey(UOM, models.CASCADE, null=True)

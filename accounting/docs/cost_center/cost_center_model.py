@@ -9,7 +9,7 @@ GLOBAL_YES_NO = (
 
 class CostCenter(models.Model):
     id = models.CharField(max_length=120,primary_key=True)
-    code = models.CharField(max_length=120, blank=True)   ## system generated
+    code = models.CharField(max_length=120, default="CST-CNTR_{5}")   ## system generated
     
     cost_center_name = models.CharField(max_length=120)
     cost_center_shortname = models.CharField(max_length=120)

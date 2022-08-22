@@ -19,7 +19,7 @@ STATUS = (
 
 class PricingRule(models.Model):
     id = models.CharField(primary_key=True, max_length=120)
-    code = models.CharField(max_length=120, blank=True)   ## system generated
+    code = models.CharField(max_length=120, default="PRC-RLE_{6}")   ## system generated
 
     price_rule_name = models.CharField(max_length=120, blank=True)
     description = models.CharField(max_length=120, blank=True)
@@ -31,7 +31,7 @@ class PricingRule(models.Model):
     # criteria section
     criteria_qty = models.FloatField(default=0)
     criteria_uom = models.ForeignKey(UOM, on_delete=models.CASCADE, null=True) ## FK
-    criteria_amt = models.DecimalField(decimal_places=4, max_digits=10)
+    criteria_amt = models.DecimalField(decimal_places=4, max_digits=10, default=0)
     criteria_prd_start = models.DateField(null=True)
     criteria_prd_end = models.DateField(null=True)
 

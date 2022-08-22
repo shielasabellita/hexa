@@ -9,7 +9,7 @@ GLOBAL_YES_NO = (
 
 class PriceList(models.Model):
     id = models.CharField(primary_key=True, max_length=120)
-    code = models.CharField(max_length=120, blank=True)   ## system generated
+    code = models.CharField(max_length=120, default="PR-LST_{5}")   ## system generated
     
     price_list_name = models.CharField(max_length=120)
     is_buying = models.IntegerField(choices=GLOBAL_YES_NO, default=0)

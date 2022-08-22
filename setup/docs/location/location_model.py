@@ -9,7 +9,7 @@ GLOBAL_YES_NO = (
 
 class Location(models.Model):
     id = models.CharField(max_length=120, primary_key=True)
-    code = models.CharField(max_length=120, blank=True)    ## system generated
+    code = models.CharField(max_length=120, default="LOC_{9}")    ## system generated
     location_name = models.CharField(max_length=120)
     location_shortname = models.CharField(max_length=120)
     is_group = models.IntegerField(choices=GLOBAL_YES_NO, default=0)

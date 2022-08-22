@@ -9,7 +9,7 @@ GLOBAL_YES_NO = (
 
 class ParentCompany(models.Model):
     id = models.CharField(max_length=120, primary_key=True)
-    code = models.CharField(max_length=120, blank=True)  ## system generated
+    code = models.CharField(max_length=120, default="PRNT-COMP_{5}")  ## system generated
     parent_company_name = models.CharField(max_length=120)
      
     

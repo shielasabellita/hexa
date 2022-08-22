@@ -76,7 +76,11 @@ class Document(APIView):
 
 
     def create(self, data, user='Guest'):
-        code = set_naming_series(data['code'])
+        if data.get("code"):
+            code = set_naming_series(data['code'])
+        else:
+            default = self.model._meta.get_field("code").default
+            code = set_naming_series(default)
         
         data.update({
             "id": generate_id(),

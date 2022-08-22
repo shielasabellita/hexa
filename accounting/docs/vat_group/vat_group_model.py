@@ -9,7 +9,8 @@ GLOBAL_YES_NO = (
 
 class VatGroup(models.Model):
     id = models.CharField(max_length=120, primary_key=True)
-    code = models.CharField(max_length=120, blank=True)   ## system generated
+    code = models.CharField(max_length=120, default="VAT_{5}")   ## system generated
+
     vat_group_name = models.CharField(max_length=120)
     rate = models.CharField(max_length=120)
 

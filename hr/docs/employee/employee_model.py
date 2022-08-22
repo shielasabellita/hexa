@@ -23,7 +23,7 @@ gender = (
 
 class Employee(models.Model):
     id = models.CharField(max_length=120, primary_key=True)
-    code = models.CharField(max_length=120, blank=True)   ## system generated
+    code = models.CharField(max_length=120, default="EMP_{9}")   ## system generated
     
     emp_name = models.CharField(max_length=120)
     is_custodian = models.IntegerField(choices=GLOBAL_YES_NO, default=0)

@@ -9,7 +9,8 @@ GLOBAL_YES_NO = (
 
 class ChartOfAccounts(models.Model):
     id = models.CharField(primary_key=True, max_length=120)
-    code = models.CharField(max_length=120, blank=True)   ## system generated
+    code = models.CharField(max_length=120, default="COA_{5}")   ## system generated
+
     account_code = models.CharField(max_length=120, blank=True)
     account_name = models.CharField(max_length=120)
     account_type_and_financial_group = models.CharField(max_length=80, blank=True)

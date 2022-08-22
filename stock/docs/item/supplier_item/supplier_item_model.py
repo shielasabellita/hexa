@@ -11,7 +11,7 @@ GLOBAL_YES_NO = (
 
 class SupplierItem(models.Model):
     id = models.CharField(max_length=120, primary_key=True)
-    code = models.CharField(max_length=120, blank=True)   ## system generated
+    code = models.CharField(max_length=120, default="ITM-SUP_{9}")   ## system generated
     
     #FK
     price_list = models.ForeignKey(PriceList, models.CASCADE, null=True)

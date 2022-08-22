@@ -9,7 +9,7 @@ GLOBAL_YES_NO = (
 
 class StatusAndRCode(models.Model):
     id = models.CharField(primary_key=True, max_length=120)
-    code = models.CharField(max_length=120, blank=True)   ## system generated
+    code = models.CharField(max_length=120, default="RC_{9}")   ## system generated
     
     module_group = models.CharField(max_length=120)
     module = models.CharField(max_length=120)

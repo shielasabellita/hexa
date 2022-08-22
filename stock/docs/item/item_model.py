@@ -12,7 +12,8 @@ GLOBAL_YES_NO = (
 
 class Item(models.Model):
     id = models.CharField(max_length=120, primary_key=True)
-    code = models.CharField(max_length=120, blank=True)   ## system generated
+    code = models.CharField(max_length=120, default="ITM_{9}")   ## system generated
+
     sku_code = models.CharField(max_length=120)
     item_barcode = models.CharField(max_length=120)
     item_name = models.CharField(max_length=120)

@@ -7,7 +7,7 @@ from accounting.docs.discount_group.discount_group_model import DiscountGroup
 
 class CustomerDiscounts(models.Model):
     id = models.CharField(max_length=120, primary_key=True)
-    code = models.CharField(max_length=120, blank=True)   ## system generated
+    code = models.CharField(max_length=120, default="CUST-DISC_{9}")   ## system generated
     
     # FK
     customer = models.ForeignKey(Customer, models.CASCADE, null=True)

@@ -9,7 +9,7 @@ GLOBAL_YES_NO = (
 
 class Branch(models.Model):
     id = models.CharField(max_length=120, primary_key=True)
-    code = models.CharField(max_length=45, blank=True)     ## system generated
+    code = models.CharField(max_length=45, default="BR_{9}")     ## system generated
     branch_name = models.CharField(max_length=45)
     branch_shortname = models.CharField(max_length=45)
     is_group = models.IntegerField(choices=GLOBAL_YES_NO, default=0)

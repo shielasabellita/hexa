@@ -1,6 +1,8 @@
 from rest_framework import status
 from rest_framework.response import Response
 from setup.core.doc import Document
+from stock.docs.item.item_model import Item
+from stock.docs.uom.uom_model import UOM
 
 from .purchase_order_serializer import PurchaseOrderSerializer, PurchaseOrder
 
@@ -12,6 +14,7 @@ from stock.docs.item_group.item_group_serializer import ItemGroupSerializer, Ite
 from setup.docs.reason_codes.reason_codes_serializer import StatusAndRCodeSerializer, StatusAndRCode
 from stock.docs.fixed_asset_group.fixed_asset_serializer import FixedAssetGroupSerializer, FixedAssetGroup
 from buying.docs.supplier.supplier_serializer import Supplier, SupplierSerializer
+from .po_items.po_items_model import POItems
 
 # utils
 # from buying.docs.buying_controller import get_rate
@@ -45,17 +48,20 @@ class PurchaseOrderView(Document):
         data = request.data
         self.set_obj_data(data)
         
-        # for i in data.get("items"):
-        #     get_rate(price_list=data['price_list'], item=i['item'], rate=i['rate'])
+        
 
-        return Response(self.obj)
+
+
+
+
+
+
 
 
     def set_obj_data(self, data):
         self.obj.update({
             "date": data['date'],
             "date_expected": data['date_expected'],
-
         })
         self.validate_item_group(data)
         self.location(data)
@@ -117,7 +123,8 @@ class PurchaseOrderView(Document):
 
 
     
-
+    # items
+    # def 
 
     
     

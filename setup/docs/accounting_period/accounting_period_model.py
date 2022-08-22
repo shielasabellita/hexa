@@ -13,7 +13,7 @@ STATUS = (
 
 class AccountingPeriod(models.Model):
     id = models.CharField(primary_key=True, max_length=100)
-    code = models.CharField(max_length=45, blank=True) ## system generated
+    code = models.CharField(max_length=45, default="ACC-PRD_{5}") ## system generated
     acctng_period_name = models.CharField(max_length=45, blank=True)
     acctng_period_start_date = models.DateField(blank=True)
     acctng_period_end_date = models.DateField(blank=True)

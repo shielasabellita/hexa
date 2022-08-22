@@ -7,7 +7,7 @@ from accounting.models import VatGroup
 
 class POItems(models.Model):
     id = models.CharField(max_length=120, primary_key=True)
-    code = models.CharField(max_length=120, blank=True)   ## system generated
+    code = models.CharField(max_length=120, blank=True, default="PO-ITM_{10}")  ## system generated
 
     item = models.ForeignKey(Item, on_delete=models.CASCADE) # FK
     item_description = models.CharField(max_length=120, blank=True)

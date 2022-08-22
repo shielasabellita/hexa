@@ -14,7 +14,7 @@ GLOBAL_YES_NO = (
 
 class PurchaseOrder(models.Model):
     id = models.CharField(max_length=120, primary_key=True)
-    code = models.CharField(max_length=120, blank=True)   ## system generated
+    code = models.CharField(max_length=120, default="PO_{7}")   ## system generated
 
     reason_code = models.ForeignKey(StatusAndRCode, on_delete=models.CASCADE, null=True) # FK
     item_group = models.ForeignKey(ItemGroup, on_delete=models.CASCADE, null=True) # FK

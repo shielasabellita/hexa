@@ -1,4 +1,8 @@
 import decimal
+from accounting.docs.discount_group.discount_group_model import DiscountGroup
+from buying.docs.supplier.supplier_discounts.supplier_discounts_model import SupplierDiscounts
+from buying.docs.supplier.supplier_model import Supplier
+from stock.docs.item.supplier_item.supplier_item_model import SupplierItem
 from stock.models import Item, ItemPrice
 from accounting.models import PriceList, VatGroup
 
@@ -55,6 +59,8 @@ def get_item_rate(request):
         "uom_id": item_doc.base_uom.id,
         "uom": item_doc.base_uom.uom,
     }
+
+    print(get_supplier_discount(data.get("supplier")), data.get("item"))
     
     return Response(res)
 
@@ -66,4 +72,46 @@ def get_item_amount(rate, qty):
 def generate_item_price_if_zero(item, rate, uom, price_list, supplier):
     ItemPrice.objects.create(**{
         "item": item,
+
     })
+
+@api_view(['GET', 'POST'])
+def get_supplier_discount(request, supplier, item=None):
+    """
+        gets the tagged supplier discount in item and in supplier master
+        lack: pricing rule
+    """
+
+    discounts = {
+            "is_per_item": 0,
+            "discounts": [],
+            "total_disc": 0,
+            "item": item
+        }
+    
+    sup_item = SupplierItem.objects.filter(item=item, supplier=supplier)
+    if sup_item:
+        discounts['is_per_item'] = 1
+    
+
+    try:
+        total_disc = 0
+        supplier_doc = Supplier.objects.get(id=supplier)
+        disc_group = SupplierDiscounts.objects.filter(supplier=supplier_doc)
+        
+        for disc in disc_group:
+            discounts["discounts"].append({
+                "discount_name": disc.discount_group.discount_name,
+                "total_disc": disc.discount_group.total_discount
+            })
+
+            total_disc += disc.discount_group.total_discount
+
+        discounts.update({
+            "total_disc": total_disc,
+            "supplier": supplier_doc.id,
+            "supplier_name": supplier_doc.sup_name,
+        })
+        return Response(discounts)
+    except:
+        return Response(discounts)
