@@ -38,7 +38,7 @@ class PricingRuleView(Document):
                     applyto = data.get("apply_to")
                     for i in applyto['lists']:
                         obj = {
-                            applyto['apply_to'].lower: i,
+                            applyto['apply_to'].lower(): i,
                             "pricing_rule": doc['id']
                         }
                         apply_to_doc = ApplyToView(ApplyTo, ApplyToSerializer)
