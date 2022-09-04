@@ -9,7 +9,7 @@ GLOBAL_YES_NO = (
 
 class ItemGroup(models.Model):
     id = models.CharField(max_length=120, primary_key=True)
-    code = models.CharField(max_length=120, blank=True)   ## system generated
+    code = models.CharField(max_length=120, default="ITM-GRP_{5}")   ## system generated
     item_group_name = models.CharField(max_length=120)
     
     # defaults

@@ -60,28 +60,22 @@ def get_item_rate(request):
         "uom": item_doc.base_uom.uom,
     }
 
-    print(get_supplier_discount(data.get("supplier")), data.get("item"))
+    _get_supplier_discount(data.get("supplier")), data.get("item")
     
     return Response(res)
 
-
-def get_item_amount(rate, qty):
-    return rate * qty
-
-
-def generate_item_price_if_zero(item, rate, uom, price_list, supplier):
-    ItemPrice.objects.create(**{
-        "item": item,
-
-    })
-
+# api
 @api_view(['GET', 'POST'])
 def get_supplier_discount(request, supplier, item=None):
+    res = _get_supplier_discount(supplier, item)
+    return Response(res)
+
+# fn
+def _get_supplier_discount(supplier, item=None):
     """
         gets the tagged supplier discount in item and in supplier master
         lack: pricing rule
     """
-
     discounts = {
             "is_per_item": 0,
             "discounts": [],
@@ -112,6 +106,22 @@ def get_supplier_discount(request, supplier, item=None):
             "supplier": supplier_doc.id,
             "supplier_name": supplier_doc.sup_name,
         })
-        return Response(discounts)
+        return discounts
     except:
-        return Response(discounts)
+        return discounts
+
+
+
+# utils
+# def get_item_rate(item, rate):
+
+
+def get_item_amount(rate, qty):
+    return rate * qty
+
+
+def generate_item_price_if_zero(item, rate, uom, price_list, supplier):
+    ItemPrice.objects.create(**{
+        "item": item,
+
+    })

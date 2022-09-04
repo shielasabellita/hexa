@@ -7,9 +7,9 @@ GLOBAL_YES_NO = (
     )
 
 
-class UOM(models.Model):
+class UOMConversion(models.Model):
     id = models.CharField(max_length=120, primary_key=True)
-    code = models.CharField(max_length=120, default="UOM_{5}")   ## system generated
+    code = models.CharField(max_length=120, default="UOM-CONV_{9}")   ## system generated
     uom = models.CharField(max_length=120)
     must_be_a_whole_number = models.IntegerField(choices=GLOBAL_YES_NO, default=0)
 

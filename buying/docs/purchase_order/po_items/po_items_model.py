@@ -10,6 +10,7 @@ class POItems(models.Model):
     code = models.CharField(max_length=120, blank=True, default="PO-ITM_{10}")  ## system generated
 
     item = models.ForeignKey(Item, on_delete=models.CASCADE) # FK
+    item_code = models.CharField(max_length=120, blank=True)
     item_description = models.CharField(max_length=120, blank=True)
     item_shortname = models.CharField(max_length=120, blank=True)
     qty_ordered = models.FloatField(max_length=10, default=0)
