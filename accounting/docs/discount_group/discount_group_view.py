@@ -1,5 +1,10 @@
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.status import HTTP_500_INTERNAL_SERVER_ERROR
+from accounting.docs.discount_group.discount_items.discount_items_view import DiscountItemsView, DiscountItemsSerializer, DiscountItems
+from accounting.docs.discount_group.discount_rate_model.discount_rate_model import DiscountRate
+from accounting.docs.discount_group.discount_rate_model.discount_rate_serializer import DiscountRateSerializer
+from accounting.docs.discount_group.discount_rate_model.discount_rate_view import DiscountRateView
 from setup.core.doc import Document
 
 # serializer
@@ -15,6 +20,7 @@ class DiscountGroupView(Document):
         args = (DiscountGroup, DiscountGroupSerializer)
         super().__init__(*args,**kwargs)
 
+
     # API - GET
     def get(self, request, *args, **kwargs):
         try:
@@ -27,18 +33,52 @@ class DiscountGroupView(Document):
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
     # API - POST
     def post(self, request, *args, **kwargs):
         data = request.data 
         try:
-            # total = sum([data.get('discount1'), data.get('discount2'), data.get('discount3')])
-            discounts = json.loads(data.get("discounts"))
-            total = sum(discounts)
-            data.update({
+            total = 0
+            if not data.get("discounts"):
+                return Response("Please input discount rates", status=HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                for i in data.get("discounts"):
+                    total += i['disc_rate']
+            
+            obj = {
+                "discount_name": data['discount_name'],
                 "total_discount": total
+            }
+
+            if data.get('code'):
+                obj.update({'code': data.get('code')})
+            
+            parent_doc = self.create(obj, user=str(request.user))
+            rate_dt = []
+            items_dt = []
+            for i in data.get('discounts'):
+                i.update({
+                    "disc_group": parent_doc.get("id")
+                })
+                dc_rate_doc = DiscountRateView(DiscountRate, DiscountRateSerializer)
+                rate_dt.append(dc_rate_doc.create(i, user=str(request.user)))
+
+            
+            # items
+            if data.get("items"):
+                for i in data.get('items'):
+                    i.update({
+                        "disc_group": parent_doc.get("id")
+                    })
+                    dc_items_doc = DiscountItemsView(DiscountItems, DiscountItemsSerializer)
+                    items_dt.append(dc_items_doc.create(data=i, user=str(request.user)))
+
+            dt = parent_doc
+            dt.update({
+                "discounts": rate_dt,
+                "items": items_dt
             })
-            data = self.create(data, user=str(request.user))
-            return Response(data)
+            return Response(dt)
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
