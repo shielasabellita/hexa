@@ -15,6 +15,8 @@ import json
 
 
 class DiscountGroupView(Document):
+    dc_rate_doc = DiscountRateView(DiscountRate, DiscountRateSerializer)
+    dc_items_doc = DiscountItemsView(DiscountItems, DiscountItemsSerializer)
 
     def __init__(self, *args, **kwargs):
         args = (DiscountGroup, DiscountGroupSerializer)
@@ -26,13 +28,24 @@ class DiscountGroupView(Document):
         try:
             if request.GET.get('filters', None):
                 data = self.get_list(filters=json.loads(request.GET.get('filters', None)))
+                for d in data:
+                    d.update(self.get_child_data(d['id']))
             else:
                 id = request.GET.get('id', None)
                 data = self.get_list(id)
+                for d in data:
+                    d.update(self.get_child_data(d['id']))
+
             return Response(data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    def get_child_data(self, parent):
+        obj = {
+            "discounts": self.dc_rate_doc.get_list(filters={"disc_group": parent}),
+            "items": self.dc_items_doc.get_list(filters={"disc_group": parent})
+        }
+        return obj
 
     # API - POST
     def post(self, request, *args, **kwargs):
@@ -60,8 +73,7 @@ class DiscountGroupView(Document):
                 i.update({
                     "disc_group": parent_doc.get("id")
                 })
-                dc_rate_doc = DiscountRateView(DiscountRate, DiscountRateSerializer)
-                rate_dt.append(dc_rate_doc.create(i, user=str(request.user)))
+                rate_dt.append(self.dc_rate_doc.create(i, user=str(request.user)))
 
             
             # items
@@ -70,8 +82,7 @@ class DiscountGroupView(Document):
                     i.update({
                         "disc_group": parent_doc.get("id")
                     })
-                    dc_items_doc = DiscountItemsView(DiscountItems, DiscountItemsSerializer)
-                    items_dt.append(dc_items_doc.create(data=i, user=str(request.user)))
+                    items_dt.append(self.dc_items_doc.create(data=i, user=str(request.user)))
 
             dt = parent_doc
             dt.update({
