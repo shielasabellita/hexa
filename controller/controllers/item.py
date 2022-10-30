@@ -1,5 +1,7 @@
 import decimal
 from accounting.docs.discount_group.discount_group_model import DiscountGroup
+from accounting.docs.discount_group.discount_group_serializer import DiscountGroupSerializer
+from accounting.docs.discount_group.discount_group_view import DiscountGroupView
 from buying.docs.supplier.supplier_discounts.supplier_discounts_model import SupplierDiscounts
 from buying.docs.supplier.supplier_model import Supplier
 from stock.docs.item.supplier_item.supplier_item_model import SupplierItem
@@ -8,24 +10,12 @@ from accounting.models import PriceList, VatGroup
 
 from controller.utils import get_percent, flt
 
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
 
 
-@api_view(['GET', 'POST'])
-def get_item_rate(request):
-    """
-        args: {
-            "price_list": "df94b235c7ce44d7a7ef0737c6762338",
-            "item": "f7ddfbcc117843639aff3c29c827a2d3",
-            "uom": "824b1874e1cd4ff98a98a9c3419404d3", 
-            "supplier": "5d3d88f63dfd44d9818225fc66006ebc",
-            "rate": 10, // rate can be get from item price master
-            "qty": 3
-        }
-    """
-    data = request.data
 
+
+
+def _get_item_rate(data):
     pl_doc = PriceList.objects.get(id=data['price_list'])
     item_doc = Item.objects.get(id=data['item'])
     vat_percentage = get_percent(int(item_doc.vat_group.rate))
@@ -41,87 +31,108 @@ def get_item_rate(request):
     else:
         vat = 1 + vat_percentage
 
+    # item rate
+    rate = 0
+    if data.get("rate") or item_price:
+        rate = data.get("rate")
+    elif not data.get('rate') and item_price:
+        rate = item_price
 
-    rate = 0 if not (item_price.rate if item_price else data.get("rate")) else (item_price.rate if item_price else data.get("rate"))
-    amount = get_item_amount(rate, data.get("qty"))
+    rate = decimal.Decimal(rate)
+    amount = data.get("qty") * rate
 
+    
+    # DISCOUNTING
+    total_discount_percentage = 0
+    # discount group
+    sup_disc = _get_supplier_discount(data.get('supplier'), data.get('item'))
+    if sup_disc:
+        for sd in sup_disc:
+            for i in sd.get('items'):
+                itm = dict(i)
+                if itm['item'] == data.get('item'):
+                    total_discount_percentage += sd['total_discount']
+
+    # pricing rule
+
+    # additional discount
+    if data.get("additional_discount"):
+        total_discount_percentage += data.get("additional_discount")
+
+
+    # totals ====================
+    gross_rate = flt(rate, 2)
+    if vat > 0:
+        gross_rate = flt(rate/vat, 2)
+
+    total_discount_rate = decimal.Decimal(decimal.Decimal(total_discount_percentage)/gross_rate)
+    
+    net_rate = flt(gross_rate-total_discount_rate, 2)
+    amount_payable = 0
+
+    if vat > 0:
+        vat_rate = net_rate * get_percent(decimal.Decimal(item_doc.vat_group.rate))
+        amount_payable = flt(net_rate + vat_rate, 2)
+    
+
+    # Return
     res = {
-        "vat_rate": item_doc.vat_group.rate,
         "vat_group": item_doc.vat_group.vat_group_name,
         "item_id": item_doc.id,
         "code": item_doc.code,
         "item_name": item_doc.item_name,
         "item_shortname": item_doc.item_shortname,
+        "vat_rate": item_doc.vat_group.rate,
+        "total_discount_percentage": total_discount_percentage,
+        "gross_rate": gross_rate,
         "rate": rate,
-        "gross_rate": flt(rate/vat, 2),
         "amount": amount,
+        "net_rate": net_rate,
+        "amount_payable": amount_payable,
         "qty": data.get("qty"),
         "uom_id": item_doc.base_uom.id,
         "uom": item_doc.base_uom.uom,
     }
 
-    _get_supplier_discount(data.get("supplier")), data.get("item")
-    
-    return Response(res)
+    return res
 
-# api
-@api_view(['GET', 'POST'])
-def get_supplier_discount(request, supplier, item=None):
-    res = _get_supplier_discount(supplier, item)
-    return Response(res)
 
 # fn
-def _get_supplier_discount(supplier, item=None):
+def _get_supplier_discount(supplier, item, pricelist=None):
     """
         gets the tagged supplier discount in item and in supplier master
-        lack: pricing rule
+        optional: pricing rule
     """
-    discounts = {
-            "is_per_item": 0,
-            "discounts": [],
-            "total_disc": 0,
+    
+    try:
+        kwargs = {
+            "supplier": supplier,
             "item": item
         }
-    
-    sup_item = SupplierItem.objects.filter(item=item, supplier=supplier)
-    if sup_item:
-        discounts['is_per_item'] = 1
-    
-
-    try:
-        total_disc = 0
-        supplier_doc = Supplier.objects.get(id=supplier)
-        disc_group = SupplierDiscounts.objects.filter(supplier=supplier_doc)
-        
-        for disc in disc_group:
-            discounts["discounts"].append({
-                "discount_name": disc.discount_group.discount_name,
-                "total_disc": disc.discount_group.total_discount
+        if pricelist:
+            kwargs.update({
+                "price_list": pricelist
             })
 
-            total_disc += disc.discount_group.total_discount
-
-        discounts.update({
-            "total_disc": total_disc,
-            "supplier": supplier_doc.id,
-            "supplier_name": supplier_doc.sup_name,
-        })
-        return discounts
+        # print(kwargs)
+        sup_item = SupplierItem.objects.get(**kwargs)
     except:
+        sup_item = None
+
+
+    if sup_item:
+        sup_discs = SupplierDiscounts.objects.filter(supplier=supplier)
+        discounts = []
+        if sup_discs:
+            for sd in sup_discs:
+                disc_group_doc = DiscountGroupView(DiscountGroup, DiscountGroupSerializer)
+                disc_list = disc_group_doc.get_list(id=sd.discount_group.id)
+                disc_list.update(disc_group_doc.get_child_data(sd.discount_group.id))
+                discounts.append(disc_list)
+
         return discounts
+    else:
+        return None
 
 
 
-# utils
-# def get_item_rate(item, rate):
-
-
-def get_item_amount(rate, qty):
-    return rate * qty
-
-
-def generate_item_price_if_zero(item, rate, uom, price_list, supplier):
-    ItemPrice.objects.create(**{
-        "item": item,
-
-    })

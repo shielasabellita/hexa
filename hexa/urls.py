@@ -20,7 +20,7 @@ from setup.docs.user.user import login, register
 
 urlpatterns = [
     path('', welcome),
-    path('admin/', admin.site.urls),
+    path('admin', admin.site.urls),
     path('login/', login, name='login'),
     path('register/', register, name='register'),
 
