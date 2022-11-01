@@ -7,9 +7,15 @@ GLOBAL_YES_NO = (
         (0, 0),
     )
 
-APPLY_TO = (
+APPLY_FOR = (
         ("Buying", "Buying"),
         ("Selling", "Selling"),
+    )
+
+APPLY_TO = (
+        ("Item", "Item"),
+        ("Supplier", "Supplier"),
+        ("Customer", "Customer"),
     )
 
 STATUS = (
@@ -23,7 +29,8 @@ class PricingRule(models.Model):
 
     price_rule_name = models.CharField(max_length=120, blank=True)
     description = models.CharField(max_length=120, blank=True)
-    apply_for = models.CharField(choices=APPLY_TO, default='Buying', max_length=10)
+    apply_for = models.CharField(choices=APPLY_FOR, default='Buying', max_length=10)
+    apply_to = models.CharField(choices=APPLY_TO, max_length=20)
     
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE, null=True) #FK
     location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True) #FK
