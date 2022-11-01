@@ -67,17 +67,18 @@ def _get_item_rate(data):
 
     total_discount_rate = decimal.Decimal(decimal.Decimal(total_discount_percentage)/gross_rate)
     
-    net_rate = flt(gross_rate-total_discount_rate, 2)
+    net_rate = flt( (gross_rate-total_discount_rate) * data.get('qty'), 2)
     amount_payable = 0
 
     if vat > 0:
         vat_rate = net_rate * get_percent(decimal.Decimal(item_doc.vat_group.rate))
-        amount_payable = flt(net_rate + vat_rate, 2)
+        amount_payable = flt((net_rate + vat_rate) * data.get('qty'), 2)
     
 
     # Return
     res = {
-        "vat_group": item_doc.vat_group.vat_group_name,
+        "vat_group_id": item_doc.vat_group.id,
+        "vat_group_name": item_doc.vat_group.vat_group_name,
         "item_id": item_doc.id,
         "code": item_doc.code,
         "item_name": item_doc.item_name,
@@ -91,7 +92,7 @@ def _get_item_rate(data):
         "amount_payable": amount_payable,
         "qty": data.get("qty"),
         "uom_id": item_doc.base_uom.id,
-        "uom": item_doc.base_uom.uom,
+        "uom_name": item_doc.base_uom.uom,
     }
 
     return res
