@@ -1,9 +1,4 @@
-from pickle import OBJ
-from shutil import ExecError
-from accounting.docs.pricing_rule.pricing_rule_apply_to.apply_to_item_supplier_model import ApplyTo
-from accounting.docs.pricing_rule.pricing_rule_model import PricingRule
-from buying.docs.purchase_order.po_items.po_items_serializer import POItemsSerializer
-from buying.docs.purchase_order.po_items.po_items_view import POItemsView
+import json
 from rest_framework import status
 from rest_framework.response import Response
 from setup.core.doc import Document
@@ -11,6 +6,10 @@ from stock.docs.item.item_model import Item
 from stock.docs.uom.uom_model import UOM
 
 from .purchase_order_serializer import PurchaseOrderSerializer, PurchaseOrder
+from accounting.docs.pricing_rule.pricing_rule_apply_to.apply_to_item_supplier_model import ApplyTo
+from accounting.docs.pricing_rule.pricing_rule_model import PricingRule
+from buying.docs.purchase_order.po_items.po_items_serializer import POItemsSerializer
+from buying.docs.purchase_order.po_items.po_items_view import POItemsView
 
 from accounting.docs.price_list.price_list_serializer import PriceListSerializer, PriceList
 from accounting.docs.cost_center.cost_center_serializer import CostCenterSerializer, CostCenter
@@ -44,46 +43,66 @@ class PurchaseOrderView(Document):
             "price_list": [PriceList, PriceListSerializer]
         }
     
+    poitems_doc = POItemsView(POItems, POItemsSerializer)
+    
     obj = {}
+    net_amount = 0
+    total_amount = 0
+    items = []
     
     def __init__(self, *args, **kwargs):
         args = (PurchaseOrder, PurchaseOrderSerializer)
         super().__init__(*args,**kwargs)
 
-    ## REQUEST - POST
+    # API - GET
+    def get(self, request, *args, **kwargs):
+        try:
+            if request.GET.get('filters', None):
+                data = self.get_list(filters=json.loads(request.GET.get('filters', None)))
+                for d in data:
+                    d.update(self.get_child_data(d['id']))
+            else:
+                id = request.GET.get('id', None)
+                data = self.get_list(id)
+                data.update(self.get_child_data(data['id']))
+
+            return Response(data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+    def get_child_data(self, parent):
+        obj = {
+            "items": self.poitems_doc.get_list(filters={"purchase_order": parent})
+        }
+        return obj
+
+
+    # API - POST
     def post(self, request):
         data = request.data
         
-        items = []
+        self.set_po_obj(data)
         if not data.get('items'):
             raise Exception("Items is required")
         else:
-            items = self.set_poitems_obj(data.get('items'))
+            self.items = self.set_poitems_obj(data.get('items'))
 
-        # try:
         serialized_po_data = self.create(self.obj, user=str(request.user))
+        serialized_po_data.update({
+            "items": []
+        })
         if serialized_po_data:
             po_doc = PurchaseOrder.objects.get(id=serialized_po_data['id'])
-            for itm in items:
+            for itm in self.items:
                 itm.update({
                     "purchase_order": po_doc.id,
                 })
-                poitems_doc = POItemsView(ApplyTo, POItemsSerializer)
-                poitems_doc.create(data=itm, user=str(request.user))
-
-
-                    
-
-
-        
-        
-
-
-
-
-
-
-
+                
+                po_item_data = self.poitems_doc.create(data=itm, user=str(request.user))
+                serialized_po_data['items'].append(po_item_data)
+                
+        return Response(serialized_po_data)
 
 
     def set_po_obj(self, data):
@@ -150,33 +169,42 @@ class PurchaseOrderView(Document):
         return item_group
 
 
-    
-    # set total amount items 
+    # set total amount items table
     # note: rate should be calculated with VAT
     def set_poitems_obj(self, items):
         items_table = []
+        total = 0
+        net_amount = 0
         for i in items:
-            amount = flt(i.get("qty_ordered")) * flt(i.get("rate"))
-            try:
-                item_doc = Item.objects.get(id=i.get('item'))
-                price_rule = ApplyTo.objects.filter(item=i.get("item")).first()
-                obj = {
-                    "item": item_doc.id,
-                    "item_code": item_doc.code,
-                    "item_description": item_doc.item_name,
-                    "item_shortname": item_doc.item_shortname,
-                    "uom": i.get("uom"),
-                    "qty_ordered": i.get("qty_ordered"),
-                    "rate": i.get("rate"),
-                    "amount": amount,
-                    "vat_group": item_doc.vat_group.id,
-                    "price_rule": price_rule.id if price_rule else None
-                }
+            total += i['amount']
+            net_amount += i['amount_payable']
+            obj = {
+                "item": i['item_id'],
+                "item_code": i['code'],
+                "item_shortname": i['item_shortname'],
+                "qty": i['qty'],
+                "uom": i['uom_id'],
+                "rate": i['rate'],
+                "amount": i['amount'],
+                "gross_rate": i['gross_rate'],
+                "net_rate": i['net_rate'],
+                "amount_payable": i['amount_payable'],
+                "vat_amount": i['vat_amount'],
+                "vat_group": i['vat_group_id']
+            }
 
-                items_table.append(obj)
+            items_table.append(obj)
 
-            except Exception as e:
-                raise Exception(str(e))
-                
+        # totals
+        self.net_amount = net_amount
+        self.total_amount = total
+
+        self.obj.update({
+            "total_amount": total,
+            "net_amount": net_amount
+        })
+
         return items_table
+
+        
 

@@ -38,13 +38,13 @@ class PricingRule(models.Model):
     # criteria section
     criteria_qty = models.FloatField(default=0)
     criteria_uom = models.ForeignKey(UOM, on_delete=models.CASCADE, null=True) ## FK
-    criteria_amt = models.DecimalField(decimal_places=4, max_digits=10, default=0)
+    criteria_amt = models.DecimalField(decimal_places=2, max_digits=10, default=0)
     criteria_prd_start = models.DateField(null=True)
     criteria_prd_end = models.DateField(null=True)
 
     # discount section
     discount_percentage = models.FloatField(default=0)
-    discount_amt = models.DecimalField(decimal_places=4, max_digits=10)
+    discount_amt = models.DecimalField(decimal_places=2, max_digits=10)
 
     status = models.CharField(choices=STATUS, default="Open", max_length=10)
 
