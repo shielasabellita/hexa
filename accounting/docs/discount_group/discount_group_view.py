@@ -33,7 +33,12 @@ class DiscountGroupView(Document):
             else:
                 id = request.GET.get('id', None)
                 data = self.get_list(id)
-                data.update(self.get_child_data(data['id']))
+                if data: 
+                    if len(data) > 1:
+                        for d in data:
+                            d.update(self.get_child_data(d['id']))
+                    else:
+                        data.update(self.get_child_data(data['id']))
 
             return Response(data, status=status.HTTP_200_OK)
         except Exception as e:

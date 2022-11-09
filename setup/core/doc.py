@@ -49,26 +49,30 @@ class Document(APIView):
     def get_linked_data(self, data=None, fk_fields=None, models_serializer=None):
         dt = data
         if isinstance(dt, list):
-            # print("is instance")
             for d in dt:
-                print(d)
                 for i in fk_fields:
                     if d[i]:
                         inst = models_serializer[i][0].objects.get(id=d[i])
                         serializer = models_serializer[i][1](inst).data
                         d.update({
-                            i: serializer
+                            i: self.pop_default_fields(serializer)
                         })
         else:
             for i in fk_fields:
                 inst = models_serializer[i][0].objects.get(id=dt[i])
                 serializer = models_serializer[i][1](inst).data
                 dt.update({
-                    i: serializer
+                    i: self.pop_default_fields(serializer)
                 })
 
         return dt
-
+    
+    def pop_default_fields(self, serializer):
+        serializer.pop("created_by")
+        serializer.pop("created_at")
+        serializer.pop("updated_by")
+        serializer.pop("updated_at")
+        return serializer
 
     
     def sql(self, query):
