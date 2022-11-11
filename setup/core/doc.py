@@ -114,9 +114,9 @@ class Document(APIView):
             raise Exception(serializer.errors)
 
 
-    def remove(self, id, user='Guest'):
+    def remove(self, id, table_name='None', user='Guest'):
         inst = self.model.objects.get(id=id)
-        move_to_deleted_document("Company", id, model_to_dict(inst), user)
+        move_to_deleted_document(table_name, id, model_to_dict(inst), user)
         inst.delete()
         return Response("Successfully deleted", status=status.HTTP_200_OK)
        

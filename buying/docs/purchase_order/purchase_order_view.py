@@ -212,4 +212,13 @@ class PurchaseOrderView(Document):
         return items_table
 
         
-
+    # API - DELETE
+    def delete(self, request, *args, **kwargs):
+        ids = request.data['ids']
+        for id in ids: 
+            try:
+                self.remove(id, "Purchase Order", request.user)
+            except Exception as e:
+                return Response("Error on ID {}: {}".format(id, str(e)), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        return Response("Successfully deleted", status=status.HTTP_200_OK)
