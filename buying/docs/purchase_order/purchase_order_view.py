@@ -89,7 +89,7 @@ class PurchaseOrderView(Document):
         
         self.set_po_obj(data)
         if not data.get('items'):
-            raise Exception("Items is required")
+            raise Exception("Missing Items")
         else:
             self.items = self.set_poitems_obj(data.get('items'))
 
@@ -184,11 +184,11 @@ class PurchaseOrderView(Document):
             total += i['amount']
             net_amount += i['amount_payable']
             obj = {
-                "item": i['item_id'],
+                "item_id": i['item_id'],
                 "item_code": i['code'],
                 "item_shortname": i['item_shortname'],
                 "qty": i['qty'],
-                "uom": i['uom_id'],
+                "uom_id": i['uom_id'],
                 "rate": i['rate'],
                 "amount": i['amount'],
                 "gross_rate": i['gross_rate'],
@@ -222,3 +222,23 @@ class PurchaseOrderView(Document):
                 return Response("Error on ID {}: {}".format(id, str(e)), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         return Response("Successfully deleted", status=status.HTTP_200_OK)
+
+
+    # API - UPDATE
+    def put(self, request, *args, **kwargs):
+        data = request.data
+
+        if not data.get('items', None):
+            raise Exception("Missing Items")
+
+        try:
+            serialized_data = self.update(id=data.get("id"), data=data, user=str(request.user))
+            if serialized_data: 
+                serialized_data.update({"items": []})
+                for itm in data.get("items"):
+                    po_item_data = self.poitems_doc.update(id=itm.get("id"), data=itm, user=str(request.user))
+                    serialized_data['items'].append(po_item_data)
+
+            return Response(serialized_data)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)

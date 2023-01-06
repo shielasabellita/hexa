@@ -10,13 +10,13 @@ class POItems(models.Model):
     code = models.CharField(max_length=120, blank=True, default="PO-ITM_{10}")  ## system generated
 
     # item
-    item = models.ForeignKey(Item, on_delete=models.CASCADE) # FK
+    item_id = models.ForeignKey(Item, on_delete=models.CASCADE) # FK
     item_code = models.CharField(max_length=120, blank=True)
     item_description = models.CharField(max_length=120, blank=True)
     item_shortname = models.CharField(max_length=120, blank=True)
     # amount
     qty = models.FloatField(max_length=10, default=0)
-    uom = models.ForeignKey(UOM, on_delete=models.CASCADE) # FK
+    uom_id = models.ForeignKey(UOM, on_delete=models.CASCADE) # FK
     rate = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     # net
