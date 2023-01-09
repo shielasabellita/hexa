@@ -22,6 +22,7 @@ from buying.docs.supplier.supplier_serializer import Supplier, SupplierSerialize
 from .po_items.po_items_model import POItems
 
 from controller.utils import get_percent, flt
+from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 # utils
 # from buying.docs.buying_controller import get_rate
 
@@ -65,11 +66,11 @@ class PurchaseOrderView(Document):
                 id = request.GET.get('id', None)
                 data = self.get_list(id, fk_fields=self.fk_fields, models_serializer=self.fk_models_serializer)
                 if data:
-                    if len(data) > 1:
-                        for d in data:
-                            d.update(self.get_child_data(d['id']))
-                    else:
+                    if isinstance(data, ReturnDict):
                         data.update(self.get_child_data(data['id']))
+                    elif isinstance(data, ReturnList):
+                        for d in data:
+                            d.update(self.get_child_data(d['id'])) 
 
             return Response(data, status=status.HTTP_200_OK)
         except Exception as e:
