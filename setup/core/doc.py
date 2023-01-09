@@ -59,11 +59,12 @@ class Document(APIView):
                         })
         else:
             for i in fk_fields:
-                inst = models_serializer[i][0].objects.get(id=dt[i])
-                serializer = models_serializer[i][1](inst).data
-                dt.update({
-                    i: self.pop_default_fields(serializer)
-                })
+                if dt[i]:
+                    inst = models_serializer[i][0].objects.get(id=dt[i])
+                    serializer = models_serializer[i][1](inst).data
+                    dt.update({
+                        i: self.pop_default_fields(serializer)
+                    })
 
         return dt
     
