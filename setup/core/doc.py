@@ -20,10 +20,13 @@ class Document(APIView):
     serializer_class = ""
     model = ""
 
+    value = ""
+
     def __init__(self, *args, **kwargs):
         if args:
             self.model = args[0]
             self.serializer_class = args[1]
+            self.value = dict.fromkeys([field.name for field in self.model._meta.get_fields()], "")
 
 
     def get_list(self, id=None, filters=None, fk_fields=None, models_serializer=None):
@@ -126,5 +129,13 @@ class Document(APIView):
         return Response("Successfully deleted", status=status.HTTP_200_OK)
        
 
-
-       
+    def get_val(self, id):
+        inst = self.model.objects.get(id=id)
+        for i in [field.name for field in self.model._meta.get_fields()]:
+            try:
+                field_object = self.model._meta.get_field(i)
+                self.value.update({
+                    i: field_object.value_from_object(inst)
+                })
+            except:
+                pass

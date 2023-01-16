@@ -228,6 +228,7 @@ class PurchaseOrderView(Document):
     # API - UPDATE
     def put(self, request, *args, **kwargs):
         data = request.data
+        self.get_val(data.get("id"))
 
         if not data.get('items', None):
             raise Exception("Missing Items")
