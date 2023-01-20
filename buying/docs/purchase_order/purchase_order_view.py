@@ -24,7 +24,8 @@ from .po_items.po_items_model import POItems
 from controller.utils import get_percent, flt
 from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 # utils
-# from buying.docs.buying_controller import get_rate
+from controller.controllers.transaction import validate_price_list, validate_item_group
+from controller.controllers.buying import validate_date_and_request_date
 
 class PurchaseOrderView(Document):
     fk_fields = [
@@ -112,67 +113,24 @@ class PurchaseOrderView(Document):
 
 
     def set_po_obj(self, data):
-        self.obj.update({
-            "date": data['date'],
-            "date_expected": data['date_expected'],
-        })
-        self.validate_item_group(data)
-        self.location(data)
-        self.supplier(data)
-        self.price_list(data)
+        # set PO Data for creationg
+        self.obj = data
+        self.set_location_branch(data)
+        validate_date_and_request_date(data.get('date'), data.get('date_expected'))
+        validate_price_list(data.get("price_list"), type='Purchasing')
 
-        if data.get("reason_code"):
-            self.reason_code(data.get("reason_code"))
-        
+        item_group = validate_item_group(data.get("item_group"), data.get("fixed_asset_group", None))
+        if len(item_group) == 2:
+            self.obj.update({
+                "fixed_asset_group": item_group[1].id
+            })
 
-    def supplier(self, data):
-        supplier = self.fk_models_serializer['supplier'][0].objects.get(id=data["supplier"])
-        self.obj.update({
-            "supplier": supplier.id
-        })
-        return supplier
-    
-    def reason_code(self, data_reason_code):
-        reason_code = self.fk_models_serializer['reason_code'][0].objects.get(id=data_reason_code)
-        self.obj.update({
-            "reason_code": reason_code.id
-        })
-        return reason_code
-    
-    def location(self, data):
+    def set_location_branch(self, data):
+        # fetch branch from selected location
         location = self.fk_models_serializer['location'][0].objects.get(id=data['location'])
         self.obj.update({
-            "location": location.id,
-            "branch": location.branch_group_id
+            "branch": location.branch_group.id
         })
-        return location
-
-    def price_list(self, data):
-        price_list = self.fk_models_serializer['price_list'][0].objects.get(id=data["price_list"])
-        self.obj.update({
-            "price_list": price_list.id
-        })
-        return price_list
-
-    def validate_item_group(self, data):
-        item_group = self.fk_models_serializer['item_group'][0].objects.get(id=data["item_group"])
-        if item_group.item_group_name == 'Asset':
-            if not data["fixed_asset_group"]:
-                raise Exception ("Please specify Fixed Asset Group")
-            else:
-                fixed_asset_group = FixedAssetGroup.objects.get(id=data['fixed_asset_group'])
-                
-                self.obj.update({
-                    "item_group": item_group.id,
-                    "fixed_asset_group": fixed_asset_group.id
-                })
-                return item_group, fixed_asset_group
-        
-        self.obj.update({
-            "item_group": item_group.id
-        })
-        
-        return item_group
 
 
     # set total amount items table
