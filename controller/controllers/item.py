@@ -13,9 +13,56 @@ from controller.utils import get_percent, flt
 
 
 
+def _get_transaction_details(data):
+    items = []
+
+    net_total = 0
+    total_amount = 0
+    for i in data.get("items"):
+        dt = {
+            "price_list": data['price_list'],
+            "supplier": data['supplier'],
+            "item": i['item'],
+            "uom": i['uom'],
+            "qty": i['qty'],
+            "rate": i['rate'],
+            "additional_discount": data.get("additional_discount") if data.get("additional_discount") else 0
+        }
+
+        rates = _get_item_rates(dt)
+        items.append(rates)
+        net_total += rates['amount_payable']
+        total_amount += rates['amount']
+
+    sup = Supplier.objects.get(id=data.get("supplier"))
+    price_list = PriceList.objects.get(id=data.get("price_list"))
+    res = {
+        "supplier": sup.id,
+        "supplier_name": sup.sup_name,
+        "price_list": price_list.id,
+        "price_list_name": price_list.price_list_name,
+        "items": items,
+        "net_total": net_total,
+        "total_amount": total_amount
+    }
+
+    return res
 
 
-def _get_item_rate(data):
+
+
+def _get_item_rates(data):
+    """
+        args: {
+            "price_list": "df94b235c7ce44d7a7ef0737c6762338",
+            "item": "f7ddfbcc117843639aff3c29c827a2d3",
+            "uom": "824b1874e1cd4ff98a98a9c3419404d3", 
+            "supplier": "5d3d88f63dfd44d9818225fc66006ebc",
+            "rate": 10, // rate can be get from item price master
+            "qty": 3,
+            "additional_discount": 2 // not required
+        }
+    """
     pl_doc = PriceList.objects.get(id=data['price_list'])
     item_doc = Item.objects.get(id=data['item'])
     vat_percentage = get_percent(int(item_doc.vat_group.rate))
@@ -29,7 +76,7 @@ def _get_item_rate(data):
     if item_price: 
         vat_decimal = 1 + decimal.Decimal(vat_percentage)
     else:
-        vat_decimal = 1 + vat_percentage
+        vat_decimal = 1 + decimal.Decimal(vat_percentage)
 
     # item rate
     rate = 0
@@ -62,7 +109,7 @@ def _get_item_rate(data):
 
     # totals ====================
     gross_rate = rate
-
+    
     if vat_decimal > 0:
         gross_rate = rate/vat_decimal
 
@@ -78,10 +125,12 @@ def _get_item_rate(data):
     
 
     # Return
-    res = {
-        "vat_group_id": item_doc.vat_group.id,
+
+    
+    item = {
+        "vat_group": item_doc.vat_group.id,
         "vat_group_name": item_doc.vat_group.vat_group_name,
-        "item_id": item_doc.id,
+        "item": item_doc.id,
         "code": item_doc.code,
         "item_name": item_doc.item_name,
         "item_shortname": item_doc.item_shortname,
@@ -94,11 +143,12 @@ def _get_item_rate(data):
         "net_rate": flt(net_rate, 2),
         "amount_payable": flt(amount_payable, 2),
         "qty": data.get("qty"),
-        "uom_id": item_doc.base_uom.id,
+        "uom": item_doc.base_uom.id,
         "uom_name": item_doc.base_uom.uom,
     }
 
-    return res
+
+    return item
 
 
 # fn
