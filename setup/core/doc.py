@@ -114,6 +114,9 @@ class Document(APIView):
         })
 
         inst = self.model.objects.get(id=id)
+        data.update({
+            "code": inst.code
+        })
         serializer = self.serializer_class(inst, data=data)
         if serializer.is_valid():
             serializer.save()

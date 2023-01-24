@@ -13,7 +13,12 @@ from controller.utils import get_percent, flt
 
 
 
-def _get_transaction_details(data):
+def _get_transaction_details(data, method="create"):
+    """
+        method: create or update
+        diff between is update has "id"
+    """
+
     items = []
 
     net_total = 0
@@ -30,6 +35,12 @@ def _get_transaction_details(data):
         }
 
         rates = _get_item_rates(dt)
+
+        if method == 'update':
+            rates.update({
+                "id": i.get("id")
+            })
+
         items.append(rates)
         net_total += rates['amount_payable']
         total_amount += rates['amount']
@@ -42,8 +53,8 @@ def _get_transaction_details(data):
         "price_list": price_list.id,
         "price_list_name": price_list.price_list_name,
         "items": items,
-        "net_total": net_total,
-        "total_amount": total_amount
+        "net_total": flt(net_total, 2),
+        "total_amount": flt(total_amount, 2)
     }
 
     return res
@@ -51,7 +62,7 @@ def _get_transaction_details(data):
 
 
 
-def _get_item_rates(data):
+def _get_item_rates(data, method='create'):
     """
         args: {
             "price_list": "df94b235c7ce44d7a7ef0737c6762338",
@@ -131,7 +142,7 @@ def _get_item_rates(data):
         "vat_group": item_doc.vat_group.id,
         "vat_group_name": item_doc.vat_group.vat_group_name,
         "item": item_doc.id,
-        "code": item_doc.code,
+        "item_code": item_doc.code,
         "item_name": item_doc.item_name,
         "item_shortname": item_doc.item_shortname,
         "vat_rate": item_doc.vat_group.rate,

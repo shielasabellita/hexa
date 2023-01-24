@@ -26,6 +26,7 @@ from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 # utils
 from controller.controllers.transaction import validate_price_list, validate_item_group
 from controller.controllers.buying import validate_date_and_request_date
+from controller.controllers.item import _get_transaction_details
 
 class PurchaseOrderView(Document):
     fk_fields = [
@@ -60,23 +61,42 @@ class PurchaseOrderView(Document):
     def get(self, request, *args, **kwargs):
         try:
             if request.GET.get('filters', None):
-                data = self.get_list(filters=json.loads(request.GET.get('filters', None)), fk_fields=self.fk_fields, models_serializer=self.fk_models_serializer)
-                for d in data:
-                    d.update(self.get_child_data(d['id']))
+                data = self.get_filtered_list(json.loads(request.GET.get("filters")))
             else:
                 id = request.GET.get('id', None)
-                data = self.get_list(id, fk_fields=self.fk_fields, models_serializer=self.fk_models_serializer)
-                if data:
-                    if isinstance(data, ReturnDict):
-                        data.update(self.get_child_data(data['id']))
-                    elif isinstance(data, ReturnList):
-                        for d in data:
-                            d.update(self.get_child_data(d['id'])) 
+                data = self.get_data(id=id)
 
             return Response(data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+    def get_data(self, id=None, filters=None):
+        data = {}
+        if filters:
+            data = self.get_list(filters=filters, fk_fields=self.fk_fields, models_serializer=self.fk_models_serializer)
+            for d in data:
+                d.update(self.get_child_data(d['id']))
+
+            return data
+
+        if id or not id:
+            data = self.get_list(id, fk_fields=self.fk_fields, models_serializer=self.fk_models_serializer)
+            if data:
+                if isinstance(data, ReturnDict):
+                    data.update(self.get_child_data(data['id']))
+                elif isinstance(data, ReturnList):
+                    for d in data:
+                        d.update(self.get_child_data(d['id'])) 
+
+            return data
+        
+        
+    def get_all_data(self):
+        return self.get_data()
+    
+    def get_filtered_list(self, filters):
+        return self.get_data(filters=filters)
 
     def get_child_data(self, parent):
         obj = {
@@ -89,33 +109,45 @@ class PurchaseOrderView(Document):
     def post(self, request):
         data = request.data
         
-        self.set_po_obj(data)
-        if not data.get('items'):
-            raise Exception("Missing Items")
-        else:
-            self.items = self.set_poitems_obj(data.get('items'))
+        try:
+            self.set_po_obj(data)
+            self.validate_items_and_total(data)
 
-        serialized_po_data = self.create(self.obj, user=str(request.user))
-        serialized_po_data.update({
-            "items": []
-        })
-        if serialized_po_data:
-            po_doc = PurchaseOrder.objects.get(id=serialized_po_data['id'])
-            for itm in self.items:
-                itm.update({
-                    "purchase_order": po_doc.id,
-                })
-                
-                po_item_data = self.poitems_doc.create(data=itm, user=str(request.user))
-                serialized_po_data['items'].append(po_item_data)
-                
-        return Response(serialized_po_data)
+            if not data.get('items'):
+                raise Exception("Missing Items")
+
+            serialized_po_data = self.create(self.obj, user=str(request.user))
+            serialized_po_data.update({
+                "items": []
+            })
+            if serialized_po_data:
+                po_doc = PurchaseOrder.objects.get(id=serialized_po_data['id'])
+                for itm in self.obj.get('items'):
+                    itm.update({
+                        "purchase_order": po_doc.id,
+                    })
+                    
+                    po_item_data = self.poitems_doc.create(data=itm, user=str(request.user))
+                    serialized_po_data['items'].append(po_item_data)
+            
+            # return formatted data
+            dt = self.get_data(id=serialized_po_data.get("id"))
+            return Response(dt)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
     def set_po_obj(self, data):
         # set PO Data for creationg
         self.obj = data
-        self.set_location_branch(data)
+        def set_location_branch(data):
+            # fetch branch from selected location
+            location = self.fk_models_serializer['location'][0].objects.get(id=data['location'])
+            self.obj.update({
+                "branch": location.branch_group.id
+            })
+        
+        set_location_branch(data)
         validate_date_and_request_date(data.get('date'), data.get('date_expected'))
         validate_price_list(data.get("price_list"), type='Purchasing')
 
@@ -125,50 +157,42 @@ class PurchaseOrderView(Document):
                 "fixed_asset_group": item_group[1].id
             })
 
-    def set_location_branch(self, data):
-        # fetch branch from selected location
-        location = self.fk_models_serializer['location'][0].objects.get(id=data['location'])
-        self.obj.update({
-            "branch": location.branch_group.id
-        })
-
-
     # set total amount items table
     # note: rate should be calculated with VAT
-    def set_poitems_obj(self, items):
-        items_table = []
-        total = 0
-        net_amount = 0
-        for i in items:
-            total += i['amount']
-            net_amount += i['amount_payable']
-            obj = {
-                "item_id": i['item_id'],
-                "item_code": i['code'],
+    # used to create or update
+    def validate_items_and_total(self, data, method="create"):
+        new_dt = _get_transaction_details(data, method)
+        items = []
+        for i in new_dt.get("items"): 
+            item_obj = {
+                "item": i['item'],
+                "item_code": i['item_code'],
+                "item_name": i['item_name'],
                 "item_shortname": i['item_shortname'],
                 "qty": i['qty'],
-                "uom_id": i['uom_id'],
+                "uom": i['uom'],
+                "uom_name": i['uom_name'],
                 "rate": i['rate'],
                 "amount": i['amount'],
                 "gross_rate": i['gross_rate'],
                 "net_rate": i['net_rate'],
                 "amount_payable": i['amount_payable'],
                 "vat_amount": i['vat_amount'],
-                "vat_group": i['vat_group_id']
+                "vat_group": i['vat_group']
             }
 
-            items_table.append(obj)
+            if method == 'update':
+                item_obj.update({
+                    "id": i['id']
+                })
 
-        # totals
-        self.net_amount = net_amount
-        self.total_amount = total
+            items.append(item_obj)
 
         self.obj.update({
-            "total_amount": total,
-            "net_amount": net_amount
+            "items": items,
+            "net_total": new_dt['net_total'],
+            "total_amount": new_dt['total_amount']
         })
-
-        return items_table
 
         
     # API - DELETE
@@ -192,13 +216,21 @@ class PurchaseOrderView(Document):
             raise Exception("Missing Items")
 
         try:
-            serialized_data = self.update(id=data.get("id"), data=data, user=str(request.user))
+            self.set_po_obj(data)
+            self.validate_items_and_total(data, method='update')
+
+            serialized_data = self.update(id=data.get("id"), data=self.obj, user=str(request.user))
             if serialized_data: 
                 serialized_data.update({"items": []})
-                for itm in data.get("items"):
+                for itm in self.obj.get("items"):
+                    itm.update({
+                        "purchase_order": data.get("id")
+                    })
                     po_item_data = self.poitems_doc.update(id=itm.get("id"), data=itm, user=str(request.user))
                     serialized_data['items'].append(po_item_data)
 
-            return Response(serialized_data)
+            # return formatted data
+            dt = self.get_data(id=data.get("id"))
+            return Response(dt)
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
