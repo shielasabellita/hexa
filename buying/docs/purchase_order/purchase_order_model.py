@@ -36,6 +36,10 @@ class PurchaseOrder(models.Model):
     
     apply_tax = models.CharField(choices=GLOBAL_YES_NO, default=0, max_length=1)
 
+    # submittable
+    status = models.CharField(default="Draft", max_length=20)
+    docstatus = models.IntegerField(default=0)
+
     # defaults
     created_by = models.CharField(max_length=120, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
